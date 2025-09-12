@@ -1,0 +1,38 @@
+{{define "departments"}}
+{{ template "index" . }}
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Departamentos</h1>
+    
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover mx-auto">
+            <thead class="table-dark">
+                <tr class="text-center">
+                    <th>ID</th>
+                    <th>Nombre del Departamento</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                {{range .Items}}
+                <tr>
+                    <td>{{.ID}}</td>
+                    <td>{{.DepartmentName}}</td>
+                    <td>
+                        <!-- Edit Button -->
+                        <a href="/departments/edit?id={{.ID}}" class="btn btn-warning btn-sm">Editar</a>
+                        
+                        <!-- Delete Button -->
+                        <a href="/departments/delete?department_name={{.DepartmentName}}" class="btn btn-danger btn-sm">Eliminar</a>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Department Button -->
+    <a href="/departments/add" class="btn btn-success mb-3">Agregar Departamento</a>
+</div>
+
+{{end}}

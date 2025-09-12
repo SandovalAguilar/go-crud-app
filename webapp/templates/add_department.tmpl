@@ -1,0 +1,20 @@
+{{define "add_department"}}
+{{ template "index" . }}
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Agregar Departamento</h1>
+
+    <!-- Add Department Form -->
+    <form action="/departments/add" method="POST" class="mx-auto" style="max-width: 500px;">
+        <div class="mb-3">
+            <label for="department_name" class="form-label">Nombre del Departamento</label>
+            <input type="text" class="form-control" id="department_name" name="department_name" required pattern="[a-zA-Z0-9 ]+" 
+                   title="Solo se permiten caracteres alfanuméricos y espacios">
+        </div>
+
+        <button type="submit" class="btn btn-success">Agregar</button>
+        <a href="/departments" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+
+{{end}}

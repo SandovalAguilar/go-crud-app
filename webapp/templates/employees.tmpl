@@ -1,0 +1,40 @@
+{{define "employees"}}
+{{ template "index" . }}
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Empleados</h1>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover mx-auto">
+            <thead class="table-dark">
+                <tr class="text-center">
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Departamento</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                {{range .Items}}
+                <tr>
+                    <td>{{.ID}}</td>
+                    <td>{{.EmployeeName}}</td>
+                    <td>{{.DepartmentName}}</td>
+                    <td>
+                        <!-- Update Button -->
+                        <a href="/employees/edit?id={{.ID}}" class="btn btn-warning btn-sm">Editar</a>
+
+                        <!-- Delete Button -->
+                        <a href="/employees/delete?employee_name={{.EmployeeName}}&department_name={{.DepartmentName}}" class="btn btn-danger btn-sm">Eliminar</a>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+
+        <!-- Add Employee Button -->
+        <a href="/employees/add" class="btn btn-success mb-3">Agregar empleado</a>
+    </div>
+</div>
+
+{{end}}

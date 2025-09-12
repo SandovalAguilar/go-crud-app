@@ -1,0 +1,41 @@
+{{define "outputs"}}
+<h3>Inventario Salidas</h3>
+
+<!-- Inventory Output Aggregates -->
+<div class="mb-4">
+    <h5>Aggregates</h5>
+    <ul class="list-group">
+        <li class="list-group-item">Total Salidas: {{len .Items}}</li>
+        <li class="list-group-item">Total Quantity Delivered: {{.TotalQuantityDelivered}}</li>
+        <li class="list-group-item">Total Quantity Pending: {{.TotalQuantityPending}}</li>
+    </ul>
+</div>
+
+<!-- Inventory Output Table -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Material Name</th>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Date</th>
+            <th>Delivered</th>
+            <th>Employee</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{range .Items}}
+        <tr>
+            <td>{{.ID}}</td>
+            <td>{{.MaterialName}}</td>
+            <td>{{.Description}}</td>
+            <td>{{.Quantity}}</td>
+            <td>{{.Date}}</td>
+            <td>{{.Delivered}}</td>
+            <td>{{.Employee.EmployeeName}}</td> <!-- Assuming EmployeeName is part of the Employee model -->
+        </tr>
+        {{end}}
+    </tbody>
+</table>
+{{end}}

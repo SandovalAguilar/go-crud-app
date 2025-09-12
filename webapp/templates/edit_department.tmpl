@@ -1,0 +1,24 @@
+{{define "edit_department"}}
+{{ template "index" . }}
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Editar Departamento</h1>
+
+    <!-- Edit Department Form -->
+    <form action="/departments/edit?id={{.Department.ID}}" method="POST" class="mx-auto" style="max-width: 500px;">
+        
+        <!-- Hidden ID field (No need to edit the ID) -->
+        <input type="hidden" name="id" value="{{.Department.ID}}">
+        
+        <div class="mb-3">
+            <label for="department_name" class="form-label">Nombre del Departamento</label>
+            <!-- Pre-fill the department's name for editing -->
+            <input type="text" class="form-control" id="department_name" name="department_name" value="{{.Department.DepartmentName}}" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">Actualizar</button>
+        <a href="/departments" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+
+{{end}}
