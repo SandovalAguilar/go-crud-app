@@ -1,0 +1,66 @@
+{{define "add_order"}}
+{{ template "index" . }}
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Agregar Pedido</h1>
+
+    <form action="/orders/add" method="POST" class="mx-auto" style="max-width: 500px;">
+        <!-- Nombre del Material (Requerido) -->
+        <div class="mb-3">
+            <label for="material_name" class="form-label">Nombre del material</label>
+            <input type="text" class="form-control" id="material_name" name="material_name" required>
+        </div>
+
+        <!-- Nombre del Proveedor (Requerido) -->
+        <div class="mb-3">
+            <label for="supplier_name" class="form-label">Proveedor</label>
+            <input type="text" class="form-control" id="supplier_name" name="supplier_name" required>
+        </div>
+
+        <!-- Descripción del Material -->
+        <div class="mb-3">
+            <label for="material_description" class="form-label">Descripción del material</label>
+            <input type="text" class="form-control" id="material_description" name="material_description">
+        </div>
+
+        <!-- Cantidad del Material (Requerido) -->
+        <div class="mb-3">
+            <label for="material_quantity" class="form-label">Cantidad del material</label>
+            <input type="number" class="form-control" id="material_quantity" name="material_quantity" required>
+        </div>
+
+        <!-- Estado del Pedido (Requerido) -->
+        <div class="mb-3">
+            <label for="status" class="form-label">Estado</label>
+            <select class="form-control" id="status" name="status" required>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Aprobado">Aprobado</option>
+                <option value="Enviado">Enviado</option>
+                <option value="Recibido">Recibido</option>
+            </select>
+        </div>
+
+        <!-- Nota -->
+        <div class="mb-3">
+            <label for="note" class="form-label">Nota</label>
+            <textarea class="form-control" id="note" name="note" rows="3"></textarea>
+        </div>
+
+        <!-- Fecha de Pedido (Requerido) -->
+        <div class="mb-3">
+            <label for="request_date" class="form-label">Fecha de pedido</label>
+            <input type="date" class="form-control" id="request_date" name="request_date" required>
+        </div>
+
+        <!-- Fecha de Entrega -->
+        <div class="mb-3">
+            <label for="delivery_date" class="form-label">Fecha de entrega</label>
+            <input type="date" class="form-control" id="delivery_date" name="delivery_date">
+        </div>
+
+        <button type="submit" class="btn btn-success">Agregar</button>
+        <a href="/orders" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+
+{{end}}

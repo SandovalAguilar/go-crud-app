@@ -1,6 +1,5 @@
 package models
 
-// Department representa la tabla departamentos
 type Department struct {
 	ID             uint   `gorm:"primaryKey"`
 	DepartmentName string `gorm:"type:varchar(100);unique;not null;column:nombre_departamento"`
@@ -10,7 +9,6 @@ func (Department) TableName() string {
 	return "departamentos"
 }
 
-// Employee representa la tabla empleados
 type Employee struct {
 	ID             uint       `gorm:"primaryKey"`
 	EmployeeName   string     `gorm:"type:varchar(100);unique;not null;column:nombre_empleado"`
@@ -18,12 +16,10 @@ type Employee struct {
 	Department     Department `gorm:"foreignKey:DepartmentName;references:DepartmentName"` // relación
 }
 
-// TableName sobrescribe el nombre de la tabla para Employee
 func (Employee) TableName() string {
 	return "empleados"
 }
 
-// Inventory representa la tabla inventario
 type Inventory struct {
 	ID           uint   `gorm:"primaryKey"`
 	MaterialName string `gorm:"type:varchar(100);not null;column:nombre_material"`
@@ -31,7 +27,22 @@ type Inventory struct {
 	Description  string `gorm:"type:varchar(255);column:descripcion"`
 }
 
-// TableName sobrescribe el nombre de la tabla para Inventory
 func (Inventory) TableName() string {
 	return "inventario"
+}
+
+type Order struct {
+	ID                  uint    `gorm:"primaryKey;autoIncrement"`
+	MaterialName        string  `gorm:"type:varchar(100);column:nombre_material"`
+	SupplierName        string  `gorm:"type:varchar(255);column:nombre_proveedor"`
+	MaterialDescription *string `gorm:"type:varchar(255);column:descripcion_material"`
+	MaterialQuantity    int     `gorm:"column:cantidad_material"`
+	Status              string  `gorm:"type:enum('Pendiente', 'Aprobado', 'Enviado', 'Recibido');default:'Pendiente';column:estado"`
+	Note                *string `gorm:"type:text;column:nota"`
+	RequestDate         string  `gorm:"type:date;column:fecha_pedido"`
+	DeliveryDate        *string `gorm:"type:date;column:fecha_entrega"`
+}
+
+func (Order) TableName() string {
+	return "pedidos"
 }

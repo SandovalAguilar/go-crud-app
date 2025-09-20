@@ -1,4 +1,52 @@
 {{define "orders"}}
 {{ template "index" . }}
 
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Solicitudes a Administración</h1>
+    
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover mx-auto">
+            <thead class="table-dark">
+                <tr class="text-center">
+                    <th>ID</th>
+                    <th>Nombre del Material</th>
+                    <th>Proveedor</th>
+                    <th>Descripción del Material</th>
+                    <th>Cantidad del Material</th>
+                    <th>Estado</th>
+                    <th>Fecha de Pedido</th>
+                    <th>Fecha de Entrega</th>
+                    <th>Nota</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                {{range .Items}}
+                <tr>
+                    <td>{{.ID}}</td>
+                    <td>{{.MaterialName}}</td>
+                    <td>{{.SupplierName}}</td>
+                    <td>{{.MaterialDescription}}</td>
+                    <td>{{.MaterialQuantity}}</td>
+                    <td>{{.Status}}</td>
+                    <td>{{.RequestDate}}</td>
+                    <td>{{.DeliveryDate}}</td>
+                    <td>{{.Note}}</td>
+                    <td>
+                        <!-- Edit Button -->
+                        <a href="/orders/edit?id={{.ID}}" class="btn btn-warning btn-sm">Editar</a>
+                        
+                        <!-- Delete Button -->
+                        <a href="/orders/delete?id={{.ID}}&material_name={{.MaterialName}}&supplier_name={{.SupplierName}}" class="btn btn-danger btn-sm">Eliminar</a>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Order Button -->
+    <a href="/orders/add" class="btn btn-success mb-3">Agregar Solicitud</a>
+</div>
+
 {{end}}

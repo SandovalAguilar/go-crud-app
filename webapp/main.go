@@ -20,6 +20,9 @@ func main() {
 	http.HandleFunc("/departments/add", handlers.AddDepartment)             // Add a new department
 	http.HandleFunc("/departments/edit", handlers.EditDepartment)           // Edit a department
 	http.HandleFunc("/departments/delete", handlers.DeleteDepartmentByName) // Delete a department
+	http.HandleFunc("/orders", handlers.ShowOrders)
+	http.HandleFunc("/orders/add", handlers.AddOrder)
+	http.HandleFunc("/orders/delete", handlers.DeleteOrder)
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
