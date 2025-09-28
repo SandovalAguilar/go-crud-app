@@ -1,0 +1,58 @@
+{{define "add_output"}}
+{{ template "index" . }}
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Agregar Salida de Inventario</h1>
+
+    <form action="/outputs/add" method="POST" class="mx-auto" style="max-width: 500px;">
+        <!-- Nombre del Material (Required) -->
+        <div class="mb-3">
+            <label for="material_name" class="form-label">Nombre del material</label>
+            <input type="text" class="form-control" id="material_name" name="material_name" required>
+        </div>
+
+        <!-- Departamento (Required) -->
+        <div class="mb-3">
+            <label for="department_name" class="form-label">Departamento</label>
+            <input type="text" class="form-control" id="department_name" name="department_name" required>
+        </div>
+
+        <!-- Cantidad (Required) -->
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Cantidad</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+        </div>
+
+        <!-- Descripción (Optional) -->
+        <div class="mb-3">
+            <label for="description" class="form-label">Descripción</label>
+            <input type="text" class="form-control" id="description" name="description">
+        </div>
+
+        <!-- Fecha (Required) -->
+        <div class="mb-3">
+            <label for="date" class="form-label">Fecha</label>
+            <input type="date" class="form-control" id="date" name="date" required>
+        </div>
+
+        <!-- Entregado (Required) -->
+        <div class="mb-3">
+            <label for="delivered" class="form-label">Entregado</label>
+            <select class="form-control" id="delivered" name="delivered" required>
+                <option value="no" selected>No</option>
+                <option value="si">Sí</option>
+            </select>
+        </div>
+
+        <!-- Empleado (Required) -->
+        <div class="mb-3">
+            <label for="employee_name" class="form-label">Empleado</label>
+            <input type="text" class="form-control" id="employee_name" name="employee_name" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">Agregar Salida</button>
+        <a href="/outputs" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+
+{{end}}

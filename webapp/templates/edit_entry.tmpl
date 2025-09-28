@@ -1,0 +1,52 @@
+{{define "edit_entry"}}
+{{ template "index" . }}
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Editar Entrada de Inventario</h1>
+
+    <form action="/entries/edit" method="POST" class="mx-auto" style="max-width: 500px;">
+        <!-- Hidden ID -->
+        <input type="hidden" name="id" value="{{.ID}}">
+
+        <!-- Nombre del Material (Required) -->
+        <div class="mb-3">
+            <label for="material_name" class="form-label">Nombre del material</label>
+            <input type="text" class="form-control" id="material_name" name="material_name" value="{{.MaterialName}}" required>
+        </div>
+
+        <!-- Proveedor (Required) -->
+        <div class="mb-3">
+            <label for="supplier_name" class="form-label">Proveedor</label>
+            <input type="text" class="form-control" id="supplier_name" name="supplier_name" value="{{.SupplierName}}" required>
+        </div>
+
+        <!-- Descripción del material (Optional) -->
+        <div class="mb-3">
+            <label for="material_description" class="form-label">Descripción del material</label>
+            <input type="text" class="form-control" id="material_description" name="material_description" value="{{if .MaterialDescription}}{{.MaterialDescription}}{{end}}">
+        </div>
+
+        <!-- Cantidad (Required) -->
+        <div class="mb-3">
+            <label for="material_quantity" class="form-label">Cantidad</label>
+            <input type="number" class="form-control" id="material_quantity" name="material_quantity" value="{{.Quantity}}" min="1" required>
+        </div>
+
+        <!-- Fecha de entrada (Required) -->
+        <div class="mb-3">
+            <label for="entry_date" class="form-label">Fecha de entrada</label>
+            <input type="date" class="form-control" id="entry_date" name="entry_date" value="{{.EntryDate}}" required>
+        </div>
+
+        <!-- Nota (Optional) -->
+        <div class="mb-3">
+            <label for="note" class="form-label">Nota</label>
+            <textarea class="form-control" id="note" name="note" rows="3">{{if .Note}}{{.Note}}{{end}}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        <a href="/entries" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+
+{{end}}
