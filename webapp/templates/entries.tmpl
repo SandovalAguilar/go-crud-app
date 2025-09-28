@@ -1,4 +1,48 @@
 {{define "entries"}}
 {{ template "index" . }}
 
+<div class="container mt-4">
+    <h1 class="text-center mb-4">{{.Title}}</h1>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover mx-auto">
+            <thead class="table-dark">
+                <tr class="text-center">
+                    <th>ID</th>
+                    <th>Nombre del Material</th>
+                    <th>Cantidad</th>
+                    <th>Descripción</th>
+                    <th>Proveedor</th>
+                    <th>Fecha de Entrada</th>
+                    <th>Nota</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                {{range .Entries}}
+                <tr>
+                    <td>{{.ID}}</td>
+                    <td>{{.MaterialName}}</td>
+                    <td>{{.Quantity}}</td>
+                    <td>{{if .MaterialDescription}}{{.MaterialDescription}}{{else}}N/A{{end}}</td>
+                    <td>{{.SupplierName}}</td>
+                    <td>{{.EntryDate}}</td>
+                    <td>{{if .Note}}{{.Note}}{{else}}N/A{{end}}</td>
+                    <td>
+                        <!-- Edit Button -->
+                        <a href="/entries/edit?id={{.ID}}" class="btn btn-warning btn-sm">Editar</a>
+
+                        <!-- Delete Button -->
+                        <a href="/entries/delete?id={{.ID}}&material_name={{.MaterialName}}" class="btn btn-danger btn-sm">Eliminar</a>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Create Entry Button -->
+    <a href="/entries/add" class="btn btn-success mb-3">Agregar Entrada</a>
+</div>
+
 {{end}}

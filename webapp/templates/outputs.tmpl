@@ -1,41 +1,46 @@
 {{define "outputs"}}
-<h3>Inventario Salidas</h3>
+{{ template "index" . }}
 
-<!-- Inventory Output Aggregates -->
-<div class="mb-4">
-    <h5>Aggregates</h5>
-    <ul class="list-group">
-        <li class="list-group-item">Total Salidas: {{len .Items}}</li>
-        <li class="list-group-item">Total Quantity Delivered: {{.TotalQuantityDelivered}}</li>
-        <li class="list-group-item">Total Quantity Pending: {{.TotalQuantityPending}}</li>
-    </ul>
+<div class="container mt-4">
+    <h1 class="text-center mb-4">{{.Title}}</h1>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover mx-auto">
+            <thead class="table-dark">
+                <tr class="text-center">
+                    <th>ID</th>
+                    <th>Nombre del Material</th>
+                    <th>Departamento</th>
+                    <th>Cantidad</th>
+                    <th>Descripción</th>
+                    <th>Fecha</th>
+                    <th>Entregado</th>
+                    <th>Empleado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                {{range .Outputs}}
+                <tr>
+                    <td>{{.ID}}</td>
+                    <td>{{.MaterialName}}</td>
+                    <td>{{.DepartmentName}}</td>
+                    <td>{{.Quantity}}</td>
+                    <td>{{if .Description}}{{.Description}}{{else}}N/A{{end}}</td>
+                    <td>{{.Date}}</td>
+                    <td>{{.Delivered}}</td>
+                    <td>{{.EmployeeName}}</td>
+                    <td>
+                        <a href="/outputs/edit?id={{.ID}}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="/outputs/delete?id={{.ID}}&material_name={{.MaterialName}}" class="btn btn-danger btn-sm">Eliminar</a>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+
+    <a href="/outputs/add" class="btn btn-success mb-3">Agregar Salida</a>
 </div>
 
-<!-- Inventory Output Table -->
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Material Name</th>
-            <th>Description</th>
-            <th>Quantity</th>
-            <th>Date</th>
-            <th>Delivered</th>
-            <th>Employee</th>
-        </tr>
-    </thead>
-    <tbody>
-        {{range .Items}}
-        <tr>
-            <td>{{.ID}}</td>
-            <td>{{.MaterialName}}</td>
-            <td>{{.Description}}</td>
-            <td>{{.Quantity}}</td>
-            <td>{{.Date}}</td>
-            <td>{{.Delivered}}</td>
-            <td>{{.Employee.EmployeeName}}</td> <!-- Assuming EmployeeName is part of the Employee model -->
-        </tr>
-        {{end}}
-    </tbody>
-</table>
 {{end}}

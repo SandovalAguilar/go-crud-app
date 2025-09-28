@@ -1,19 +1,19 @@
--- Crear base de datos
-CREATE DATABASE inventario_db;
 USE inventario_db;
 
 -- Tabla de departamentos
 CREATE TABLE departamentos (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_departamento VARCHAR(100)
+    nombre_departamento VARCHAR(100) UNIQUE
 );
 
--- Tabla de empleados (con departamento)
+-- Tabla de empleados (con departamento por nombre)
+-- Agregar columna que indique si el empleado está activo
+-- Agregar correo empleado
 CREATE TABLE empleados (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_empleado VARCHAR(100),
-    departamento_id INT,  -- Relación con la tabla departamentos
-    FOREIGN KEY (departamento_id) REFERENCES departamentos(id)
+    nombre_empleado VARCHAR(100) UNIQUE,
+    departamento_nombre VARCHAR(100),
+    FOREIGN KEY (departamento_nombre) REFERENCES departamentos(nombre_departamento)
 );
 
 -- Tabla de inventario (inventario general)
@@ -28,14 +28,14 @@ CREATE TABLE inventario (
 CREATE TABLE inventario_salidas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre_material VARCHAR(100),
-    departamento_id INT, -- Relación con la tabla departamentos
+    departamento_nombre VARCHAR(100), -- Relación por nombre
     cantidad INT,
     descripcion VARCHAR(255),
     fecha DATE,
     entregado ENUM('si', 'no') DEFAULT 'no',
-    empleado_id INT, -- Relación con la tabla empleados (quien recibió)
-    FOREIGN KEY (departamento_id) REFERENCES departamentos(id),
-    FOREIGN KEY (empleado_id) REFERENCES empleados(id)
+    empleado_nombre VARCHAR(100), -- Relación por nombre
+    FOREIGN KEY (departamento_nombre) REFERENCES departamentos(nombre_departamento),
+    FOREIGN KEY (empleado_nombre) REFERENCES empleados(nombre_empleado)
 );
 
 -- Tabla de inventario de entradas
@@ -44,33 +44,33 @@ CREATE TABLE inventario_entradas (
     fecha_entrada DATE,
     nombre_material VARCHAR(100),
     cantidad INT,
-    descripcion_material VARCHAR(255),
+    descripcion_material VARCHAR(255) NULL,
     nombre_proveedor VARCHAR(100),
-    cantidad INT,
-    nota TEXT,
-    departamento_id INT,  -- Relación con la tabla departamentos
-    FOREIGN KEY (departamento_id) REFERENCES departamentos(id)
+    nota TEXT NULL
 );
 
 -- Tabla de pedidos
 CREATE TABLE pedidos (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    descripcion_material VARCHAR(255),
+    nombre_material VARCHAR(100),
+    nombre_proveedor VARCHAR(255),
+    descripcion_material VARCHAR(255) NULL,
     cantidad_material INT,
     estado ENUM('Pendiente', 'Aprobado', 'Enviado', 'Recibido') DEFAULT 'Pendiente',
+    nota TEXT NULL,
     fecha_pedido DATE,
-    fecha_entrega DATE
+    fecha_entrega DATE NULL
 );
 
--- Tabla de material pendiente requisición (relacionada con salidas no entregadas)
+-- Tabla de material pendiente requisición
 CREATE TABLE material_pendiente_requisicion (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre_material VARCHAR(255),
-    empleado_id INT, -- Relación con la tabla empleados (quien solicitó)
-    departamento_id INT, -- Relación con la tabla departamentos
+    empleado_nombre VARCHAR(100), -- Relación por nombre
+    departamento_nombre VARCHAR(100), -- Relación por nombre
     fecha DATE,
-    salida_id INT,  -- Relación con la tabla inventario_salidas (material pendiente)
-    FOREIGN KEY (empleado_id) REFERENCES empleados(id),
-    FOREIGN KEY (departamento_id) REFERENCES departamentos(id),
-    FOREIGN KEY (salida_id) REFERENCES inventario_salidas(id)  -- Relación con la tabla de salidas
+    salida_id INT,  -- Relación con la tabla inventario_salidas
+    FOREIGN KEY (empleado_nombre) REFERENCES empleados(nombre_empleado),
+    FOREIGN KEY (departamento_nombre) REFERENCES departamentos(nombre_departamento),
+    FOREIGN KEY (salida_id) REFERENCES inventario_salidas(id)
 );

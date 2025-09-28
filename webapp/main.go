@@ -11,18 +11,25 @@ func main() {
 	config.InitDB()
 
 	http.HandleFunc("/", handlers.InventoryHandler)
-	http.HandleFunc("/entries", handlers.EntriesHandler)
+	http.HandleFunc("/entries", handlers.ShowEntries)
+	http.HandleFunc("/entries/add", handlers.AddEntry)
+	http.HandleFunc("/entries/delete", handlers.DeleteEntry)
+	http.HandleFunc("/entries/edit", handlers.EditEntry)
 	http.HandleFunc("/employees", handlers.ShowEmployees)
 	http.HandleFunc("/employees/add", handlers.AddEmployee)
 	http.HandleFunc("/employees/delete", handlers.DeleteEmployeeByName)
-	http.HandleFunc("/employees/edit", handlers.EditEmployee)               // To render the edit form
-	http.HandleFunc("/departments", handlers.ShowDepartments)               // Show all departments
-	http.HandleFunc("/departments/add", handlers.AddDepartment)             // Add a new department
-	http.HandleFunc("/departments/edit", handlers.EditDepartment)           // Edit a department
-	http.HandleFunc("/departments/delete", handlers.DeleteDepartmentByName) // Delete a department
+	http.HandleFunc("/employees/edit", handlers.EditEmployee)
+	http.HandleFunc("/departments", handlers.ShowDepartments)
+	http.HandleFunc("/departments/add", handlers.AddDepartment)
+	http.HandleFunc("/departments/edit", handlers.EditDepartment)
+	http.HandleFunc("/departments/delete", handlers.DeleteDepartmentByName)
 	http.HandleFunc("/orders", handlers.ShowOrders)
 	http.HandleFunc("/orders/add", handlers.AddOrder)
 	http.HandleFunc("/orders/delete", handlers.DeleteOrder)
+	http.HandleFunc("/orders/edit", handlers.EditOrder)
+	http.HandleFunc("/outputs", handlers.ShowOutputs)
+	http.HandleFunc("/outputs/delete", handlers.DeleteOutput)
+	http.HandleFunc("/outputs/add", handlers.AddOutput)
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 

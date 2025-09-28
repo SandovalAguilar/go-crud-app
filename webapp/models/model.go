@@ -46,3 +46,32 @@ type Order struct {
 func (Order) TableName() string {
 	return "pedidos"
 }
+
+type InventoryEntry struct {
+	ID                  uint    `gorm:"primaryKey;autoIncrement"`
+	EntryDate           string  `gorm:"type:date;column:fecha_entrada"`
+	MaterialName        string  `gorm:"type:varchar(100);column:nombre_material"`
+	Quantity            int     `gorm:"column:cantidad"`
+	MaterialDescription *string `gorm:"type:varchar(255);column:descripcion_material"`
+	SupplierName        string  `gorm:"type:varchar(100);column:nombre_proveedor"`
+	Note                *string `gorm:"type:text;column:nota"`
+}
+
+func (InventoryEntry) TableName() string {
+	return "inventario_entradas"
+}
+
+type InventoryOutput struct {
+	ID             uint    `gorm:"primaryKey;autoIncrement"`
+	MaterialName   string  `gorm:"type:varchar(100);column:nombre_material"`
+	DepartmentName string  `gorm:"type:varchar(100);column:departamento_nombre"`
+	Quantity       int     `gorm:"column:cantidad"`
+	Description    *string `gorm:"type:varchar(255);column:descripcion"`
+	Date           string  `gorm:"type:date;column:fecha"`
+	Delivered      string  `gorm:"type:enum('si','no');default:'no';column:entregado"`
+	EmployeeName   string  `gorm:"type:varchar(100);column:empleado_nombre"`
+}
+
+func (InventoryOutput) TableName() string {
+	return "inventario_salidas"
+}

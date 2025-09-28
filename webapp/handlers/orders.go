@@ -123,3 +123,102 @@ func DeleteOrder(w http.ResponseWriter, r *http.Request) {
 	// Redirect back to the orders page after deletion
 	http.Redirect(w, r, "/orders", http.StatusSeeOther)
 }
+
+func EditOrder(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		// POST: update the order
+		idStr := r.FormValue("id")
+		materialName := r.FormValue("material_name")
+		supplierName := r.FormValue("supplier_name")
+		materialDescription := r.FormValue("material_description")
+		materialQuantity := r.FormValue("material_quantity")
+		status := r.FormValue("status")
+		requestDate := r.FormValue("request_date")
+		deliveryDate := r.FormValue("delivery_date")
+		note := r.FormValue("note")
+
+		// Validate required fields
+		if idStr == "" || materialName == "" || supplierName == "" || materialQuantity == "" || status == "" || requestDate == "" {
+			http.Error(w, "All required fields must be filled", http.StatusBadRequest)
+			return
+		}
+
+		// Convert ID and quantity
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			http.Error(w, "Invalid order ID", http.StatusBadRequest)
+			return
+		}
+
+		quantity, err := strconv.Atoi(materialQuantity)
+		if err != nil {
+			http.Error(w, "Invalid quantity", http.StatusBadRequest)
+			return
+		}
+
+		// Handle optional fields as pointers
+		var parsedMaterialDescription *string
+		if materialDescription != "" {
+			parsedMaterialDescription = &materialDescription
+		}
+
+		var parsedNote *string
+		if note != "" {
+			parsedNote = &note
+		}
+
+		// Handle nullable DeliveryDate
+		var parsedDeliveryDate *string
+		if deliveryDate != "" {
+			parsedDeliveryDate = &deliveryDate
+		}
+
+		// Update the order in the database
+		err = config.DB.Model(&models.Order{}).Where("id = ?", id).Updates(models.Order{
+			MaterialName:        materialName,
+			SupplierName:        supplierName,
+			MaterialDescription: parsedMaterialDescription,
+			MaterialQuantity:    quantity,
+			Status:              status,
+			RequestDate:         requestDate,
+			DeliveryDate:        parsedDeliveryDate,
+			Note:                parsedNote,
+		}).Error
+		if err != nil {
+			http.Error(w, "Error updating order: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Redirect to the orders list page
+		http.Redirect(w, r, "/orders", http.StatusSeeOther)
+		return
+	}
+
+	// GET: show the edit form with existing data
+	idStr := r.URL.Query().Get("id")
+	if idStr == "" {
+		http.Error(w, "Missing order ID", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid order ID", http.StatusBadRequest)
+		return
+	}
+
+	// Fetch the order from the database
+	var order models.Order
+	err = config.DB.First(&order, id).Error
+	if err != nil {
+		http.Error(w, "Order not found: "+err.Error(), http.StatusNotFound)
+		return
+	}
+
+	// Render the edit template
+	err = Templates.ExecuteTemplate(w, "edit_order", order)
+	if err != nil {
+		http.Error(w, "Error rendering template: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
