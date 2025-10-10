@@ -1,31 +1,27 @@
-{{ define "general" }}
+{{define "general"}}
 {{ template "index" . }}
 
 <div class="container mt-4">
     <h1 class="text-center mb-4">Inventario General</h1>
-    
+
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover mx-auto">
             <thead class="table-dark">
                 <tr class="text-center">
-                    <th>ID</th>
                     <th>Material</th>
-                    <th>Cantidad</th>
-                    <th>Descripción</th>
+                    <th>Inventario Total</th>
                 </tr>
             </thead>
             <tbody class="text-center">
-                {{ range .Items }}
+                {{range .Items}}
                 <tr>
-                    <td>{{ .ID }}</td>
-                    <td>{{ .MaterialName }}</td>
-                    <td>{{ .Quantity }}</td>
-                    <td>{{ .Description }}</td>
+                    <td>{{.MaterialName}}</td>
+                    <td>{{.Total}}</td>
                 </tr>
-                {{ end }}
+                {{end}}
             </tbody>
         </table>
     </div>
 </div>
 
-{{ end }}
+{{end}}

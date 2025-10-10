@@ -67,7 +67,6 @@ func AddOrder(w http.ResponseWriter, r *http.Request) {
 			parsedMaterialDescription = &materialDescription
 		}
 
-		// Create a new order record
 		order := models.Order{
 			MaterialName:        materialName,
 			SupplierName:        supplierName,
@@ -79,14 +78,12 @@ func AddOrder(w http.ResponseWriter, r *http.Request) {
 			Note:                parsedNote,
 		}
 
-		// Insert the order into the database
 		err = config.DB.Create(&order).Error
 		if err != nil {
 			http.Error(w, "Error adding order: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		// Redirect to the orders list page after adding the order
 		http.Redirect(w, r, "/orders", http.StatusSeeOther)
 		return
 	}
@@ -95,38 +92,32 @@ func AddOrder(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteOrder(w http.ResponseWriter, r *http.Request) {
-	// Get query parameters
 	idStr := r.URL.Query().Get("id")
 	materialName := r.URL.Query().Get("material_name")
 	supplierName := r.URL.Query().Get("supplier_name")
 
-	// Validate that required fields are provided
 	if idStr == "" || materialName == "" || supplierName == "" {
 		http.Error(w, "Missing required parameters", http.StatusBadRequest)
 		return
 	}
 
-	// Convert ID to integer
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "Invalid ID parameter", http.StatusBadRequest)
 		return
 	}
 
-	// Delete the order from the database using multiple fields as a condition
 	err = config.DB.Where("id = ? AND nombre_material = ? AND nombre_proveedor = ?", id, materialName, supplierName).Delete(&models.Order{}).Error
 	if err != nil {
 		http.Error(w, "Error deleting order: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Redirect back to the orders page after deletion
 	http.Redirect(w, r, "/orders", http.StatusSeeOther)
 }
 
 func EditOrder(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
-		// POST: update the order
 		idStr := r.FormValue("id")
 		materialName := r.FormValue("material_name")
 		supplierName := r.FormValue("supplier_name")
@@ -137,13 +128,11 @@ func EditOrder(w http.ResponseWriter, r *http.Request) {
 		deliveryDate := r.FormValue("delivery_date")
 		note := r.FormValue("note")
 
-		// Validate required fields
 		if idStr == "" || materialName == "" || supplierName == "" || materialQuantity == "" || status == "" || requestDate == "" {
 			http.Error(w, "All required fields must be filled", http.StatusBadRequest)
 			return
 		}
 
-		// Convert ID and quantity
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
 			http.Error(w, "Invalid order ID", http.StatusBadRequest)
@@ -156,7 +145,6 @@ func EditOrder(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Handle optional fields as pointers
 		var parsedMaterialDescription *string
 		if materialDescription != "" {
 			parsedMaterialDescription = &materialDescription
@@ -167,13 +155,11 @@ func EditOrder(w http.ResponseWriter, r *http.Request) {
 			parsedNote = &note
 		}
 
-		// Handle nullable DeliveryDate
 		var parsedDeliveryDate *string
 		if deliveryDate != "" {
 			parsedDeliveryDate = &deliveryDate
 		}
 
-		// Update the order in the database
 		err = config.DB.Model(&models.Order{}).Where("id = ?", id).Updates(models.Order{
 			MaterialName:        materialName,
 			SupplierName:        supplierName,
@@ -189,12 +175,10 @@ func EditOrder(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Redirect to the orders list page
 		http.Redirect(w, r, "/orders", http.StatusSeeOther)
 		return
 	}
 
-	// GET: show the edit form with existing data
 	idStr := r.URL.Query().Get("id")
 	if idStr == "" {
 		http.Error(w, "Missing order ID", http.StatusBadRequest)
@@ -207,7 +191,6 @@ func EditOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Fetch the order from the database
 	var order models.Order
 	err = config.DB.First(&order, id).Error
 	if err != nil {
@@ -215,7 +198,6 @@ func EditOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Render the edit template
 	err = Templates.ExecuteTemplate(w, "edit_order", order)
 	if err != nil {
 		http.Error(w, "Error rendering template: "+err.Error(), http.StatusInternalServerError)

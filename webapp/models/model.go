@@ -21,14 +21,12 @@ func (Employee) TableName() string {
 }
 
 type Inventory struct {
-	ID           uint   `gorm:"primaryKey"`
-	MaterialName string `gorm:"type:varchar(100);not null;column:nombre_material"`
-	Quantity     int    `gorm:"not null;column:cantidad"`
-	Description  string `gorm:"type:varchar(255);column:descripcion"`
+	MaterialName string  `gorm:"column:nombre_material"`
+	Total        float64 `gorm:"column:total"`
 }
 
 func (Inventory) TableName() string {
-	return "inventario"
+	return "vw_inventario"
 }
 
 type Order struct {

@@ -1,5 +1,5 @@
 package handlers
 
-import "text/template"
+import "html/template"
 
-var Templates = template.Must(template.ParseGlob("templates/*.tmpl"))
+var Templates = template.Must(template.ParseGlob("templates/**/*"))

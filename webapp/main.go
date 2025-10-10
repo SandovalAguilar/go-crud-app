@@ -30,6 +30,7 @@ func main() {
 	http.HandleFunc("/outputs", handlers.ShowOutputs)
 	http.HandleFunc("/outputs/delete", handlers.DeleteOutput)
 	http.HandleFunc("/outputs/add", handlers.AddOutput)
+	http.HandleFunc("/outputs/edit", handlers.EditOutput)
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 

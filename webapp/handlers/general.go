@@ -7,7 +7,6 @@ import (
 )
 
 func InventoryHandler(w http.ResponseWriter, r *http.Request) {
-	// Fetch all inventory items from the database
 	var inventoryItems []models.Inventory
 	err := config.DB.Find(&inventoryItems).Error
 	if err != nil {
@@ -15,7 +14,6 @@ func InventoryHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Render the inventory template with the fetched data
 	data := struct {
 		Title string
 		Items []models.Inventory
@@ -24,7 +22,6 @@ func InventoryHandler(w http.ResponseWriter, r *http.Request) {
 		Items: inventoryItems,
 	}
 
-	// Execute the "general" template
 	err = Templates.ExecuteTemplate(w, "general", data)
 	if err != nil {
 		http.Error(w, "Error rendering template: "+err.Error(), http.StatusInternalServerError)

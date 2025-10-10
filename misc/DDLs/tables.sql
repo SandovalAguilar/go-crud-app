@@ -69,8 +69,17 @@ CREATE TABLE material_pendiente_requisicion (
     empleado_nombre VARCHAR(100), -- Relación por nombre
     departamento_nombre VARCHAR(100), -- Relación por nombre
     fecha DATE,
-    salida_id INT,  -- Relación con la tabla inventario_salidas
     FOREIGN KEY (empleado_nombre) REFERENCES empleados(nombre_empleado),
-    FOREIGN KEY (departamento_nombre) REFERENCES departamentos(nombre_departamento),
-    FOREIGN KEY (salida_id) REFERENCES inventario_salidas(id)
+    FOREIGN KEY (departamento_nombre) REFERENCES departamentos(nombre_departamento)
 );
+
+CREATE VIEW vw_inventario AS
+SELECT
+    i.nombre_material,
+    IFNULL(SUM(i.cantidad), 0) - IFNULL(SUM(s.cantidad), 0) AS total
+FROM inventario_entradas i
+LEFT JOIN inventario_salidas s ON i.nombre_material = s.nombre_material
+GROUP BY i.nombre_material;
+
+SELECT * FROM vw_inventario;
+

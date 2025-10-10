@@ -1,0 +1,62 @@
+{{define "edit_output"}}
+{{ template "index" . }}
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Editar Salida de Inventario</h1>
+
+    <form action="/outputs/edit" method="POST" class="mx-auto" style="max-width: 500px;">
+        <!-- Hidden ID to identify which entry to edit -->
+        <input type="hidden" name="id" value="{{.ID}}">
+
+        <!-- Material Name (Required) -->
+        <div class="mb-3">
+            <label for="material_name" class="form-label">Nombre del material</label>
+            <input type="text" class="form-control" id="material_name" name="material_name" value="{{.MaterialName}}" required>
+        </div>
+
+        <!-- Department Name (Required) -->
+        <div class="mb-3">
+            <label for="department_name" class="form-label">Departamento</label>
+            <input type="text" class="form-control" id="department_name" name="department_name" value="{{.DepartmentName}}" required>
+        </div>
+
+        <!-- Quantity (Required) -->
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Cantidad</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" value="{{.Quantity}}" min="1" required>
+        </div>
+
+        <!-- Description (Optional) -->
+        <div class="mb-3">
+            <label for="description" class="form-label">Descripción</label>
+            <input type="text" class="form-control" id="description" name="description" value="{{if .Description}}{{.Description}}{{end}}">
+        </div>
+
+        <!-- Date (Required) -->
+        <div class="mb-3">
+            <label for="date" class="form-label">Fecha</label>
+            <input type="date" class="form-control" id="date" name="date" value="{{.Date}}" required>
+        </div>
+
+        <!-- Delivered (Required) -->
+        <div class="mb-3">
+            <label for="delivered" class="form-label">Entregado</label>
+            <select class="form-control" id="delivered" name="delivered" required>
+                <option value="no" {{if eq .Delivered "no"}}selected{{end}}>No</option>
+                <option value="si" {{if eq .Delivered "si"}}selected{{end}}>Sí</option>
+            </select>
+        </div>
+
+        <!-- Employee Name (Required) -->
+        <div class="mb-3">
+            <label for="employee_name" class="form-label">Empleado</label>
+            <input type="text" class="form-control" id="employee_name" name="employee_name" value="{{.EmployeeName}}" required>
+        </div>
+
+        <!-- Submit and Cancel buttons -->
+        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        <a href="/outputs" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+
+{{end}}
