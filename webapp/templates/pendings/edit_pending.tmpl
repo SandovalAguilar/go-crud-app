@@ -1,0 +1,41 @@
+{{define "edit_pending"}}
+{{ template "index" . }}
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Editar Material Pendiente</h1>
+
+    <form action="/pendings/edit" method="POST" class="mx-auto" style="max-width: 500px;">
+        <!-- Hidden ID to identify the material being edited -->
+        <input type="hidden" name="id" value="{{.ID}}">
+
+        <!-- Material Name (Required) -->
+        <div class="mb-3">
+            <label for="material_name" class="form-label">Nombre del Material</label>
+            <input type="text" class="form-control" id="material_name" name="material_name" value="{{.MaterialName}}" required>
+        </div>
+
+        <!-- Employee Name (Required) -->
+        <div class="mb-3">
+            <label for="employee_name" class="form-label">Nombre del Empleado</label>
+            <input type="text" class="form-control" id="employee_name" name="employee_name" value="{{.EmployeeName}}" required>
+        </div>
+
+        <!-- Department Name (Required) -->
+        <div class="mb-3">
+            <label for="department_name" class="form-label">Nombre del Departamento</label>
+            <input type="text" class="form-control" id="department_name" name="department_name" value="{{.DepartmentName}}" required>
+        </div>
+
+        <!-- Date (Required) -->
+        <div class="mb-3">
+            <label for="date" class="form-label">Fecha</label>
+            <input type="date" class="form-control" id="date" name="date" value="{{.Date}}" required>
+        </div>
+
+        <!-- Submit and Cancel buttons -->
+        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        <a href="/pendings" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+
+{{end}}

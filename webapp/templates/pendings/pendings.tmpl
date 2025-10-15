@@ -1,4 +1,40 @@
 {{define "pendings"}}
 {{ template "index" . }}
 
+<div class="container mt-4">
+    <h1 class="text-center mb-4">{{.Title}}</h1>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover mx-auto">
+            <thead class="table-dark">
+                <tr class="text-center">
+                    <th>ID</th>
+                    <th>Nombre del Material</th>
+                    <th>Nombre del Empleado</th>
+                    <th>Departamento</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                {{range .Pendings}}
+                <tr>
+                    <td>{{.ID}}</td>
+                    <td>{{.MaterialName}}</td>
+                    <td>{{.EmployeeName}}</td>
+                    <td>{{.DepartmentName}}</td>
+                    <td>{{.Date.Format "2006-01-02"}}</td>
+                    <td>
+                        <a href="/pendings/edit?id={{.ID}}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="/pendings/delete?id={{.ID}}&material_name={{.MaterialName}}" class="btn btn-danger btn-sm">Eliminar</a>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+
+    <a href="/pendings/add" class="btn btn-success mb-3">Agregar Pendiente</a>
+</div>
+
 {{end}}

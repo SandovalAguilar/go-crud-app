@@ -31,13 +31,12 @@ func ShowEntries(w http.ResponseWriter, r *http.Request) {
 
 func AddEntry(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
-		// Handle form submission to create a new entry
 		materialName := r.FormValue("material_name")
 		quantity := r.FormValue("material_quantity")
 		description := r.FormValue("material_description")
 		supplier := r.FormValue("supplier_name")
 		note := r.FormValue("note")
-		entryDate := r.FormValue("entry_date") // <-- added
+		entryDate := r.FormValue("entry_date")
 
 		if materialName == "" || quantity == "" || supplier == "" || entryDate == "" {
 			http.Error(w, "Missing required fields", http.StatusBadRequest)

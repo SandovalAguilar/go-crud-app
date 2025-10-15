@@ -82,4 +82,3 @@ LEFT JOIN inventario_salidas s ON i.nombre_material = s.nombre_material
 GROUP BY i.nombre_material;
 
 SELECT * FROM vw_inventario;
-
