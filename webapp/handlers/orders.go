@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 	"webapp/config"
 	"webapp/models"
 )
@@ -16,11 +18,15 @@ func ShowOrders(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := struct {
-		Title string
-		Items []models.Order
+		Title   string
+		Items   []models.Order
+		Error   string
+		Success string
 	}{
-		Title: "Pedidos",
-		Items: orderItems,
+		Title:   "Pedidos",
+		Items:   orderItems,
+		Error:   r.URL.Query().Get("error"),
+		Success: r.URL.Query().Get("success"),
 	}
 
 	err = Templates.ExecuteTemplate(w, "orders", data)
@@ -41,14 +47,14 @@ func AddOrder(w http.ResponseWriter, r *http.Request) {
 		note := r.FormValue("note")
 
 		if materialName == "" || supplierName == "" || materialQuantity == "" || status == "" || requestDate == "" {
-			http.Error(w, "All fields except 'Descripción del material' and 'Nota' are required", http.StatusBadRequest)
+			http.Redirect(w, r, "/orders?error="+url.QueryEscape("Todos los campos excepto 'Descripción del material' y 'Nota' son requeridos"), http.StatusSeeOther)
 			return
 		}
 
 		// Convert materialQuantity to an integer
 		quantity, err := strconv.Atoi(materialQuantity)
 		if err != nil {
-			http.Error(w, "Invalid quantity", http.StatusBadRequest)
+			http.Redirect(w, r, "/orders?error="+url.QueryEscape("Cantidad inválida"), http.StatusSeeOther)
 			return
 		}
 
@@ -80,11 +86,11 @@ func AddOrder(w http.ResponseWriter, r *http.Request) {
 
 		err = config.DB.Create(&order).Error
 		if err != nil {
-			http.Error(w, "Error adding order: "+err.Error(), http.StatusInternalServerError)
+			http.Redirect(w, r, "/orders?error="+url.QueryEscape("Error al agregar pedido: "+err.Error()), http.StatusSeeOther)
 			return
 		}
 
-		http.Redirect(w, r, "/orders", http.StatusSeeOther)
+		http.Redirect(w, r, "/orders?success="+url.QueryEscape("Pedido agregado exitosamente"), http.StatusSeeOther)
 		return
 	}
 
@@ -97,23 +103,28 @@ func DeleteOrder(w http.ResponseWriter, r *http.Request) {
 	supplierName := r.URL.Query().Get("supplier_name")
 
 	if idStr == "" || materialName == "" || supplierName == "" {
-		http.Error(w, "Missing required parameters", http.StatusBadRequest)
+		http.Redirect(w, r, "/orders?error="+url.QueryEscape("Faltan parámetros requeridos"), http.StatusSeeOther)
 		return
 	}
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Invalid ID parameter", http.StatusBadRequest)
+		http.Redirect(w, r, "/orders?error="+url.QueryEscape("ID inválido"), http.StatusSeeOther)
 		return
 	}
 
 	err = config.DB.Where("id = ? AND nombre_material = ? AND nombre_proveedor = ?", id, materialName, supplierName).Delete(&models.Order{}).Error
 	if err != nil {
-		http.Error(w, "Error deleting order: "+err.Error(), http.StatusInternalServerError)
+		errorMsg := err.Error()
+		if strings.Contains(errorMsg, "foreign key constraint") {
+			http.Redirect(w, r, "/orders?error="+url.QueryEscape("No se puede eliminar el pedido porque tiene registros asociados"), http.StatusSeeOther)
+		} else {
+			http.Redirect(w, r, "/orders?error="+url.QueryEscape("Error al eliminar pedido: "+errorMsg), http.StatusSeeOther)
+		}
 		return
 	}
 
-	http.Redirect(w, r, "/orders", http.StatusSeeOther)
+	http.Redirect(w, r, "/orders?success="+url.QueryEscape("Pedido eliminado exitosamente"), http.StatusSeeOther)
 }
 
 func EditOrder(w http.ResponseWriter, r *http.Request) {
@@ -129,19 +140,19 @@ func EditOrder(w http.ResponseWriter, r *http.Request) {
 		note := r.FormValue("note")
 
 		if idStr == "" || materialName == "" || supplierName == "" || materialQuantity == "" || status == "" || requestDate == "" {
-			http.Error(w, "All required fields must be filled", http.StatusBadRequest)
+			http.Redirect(w, r, "/orders?error="+url.QueryEscape("Todos los campos requeridos deben estar llenos"), http.StatusSeeOther)
 			return
 		}
 
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			http.Error(w, "Invalid order ID", http.StatusBadRequest)
+			http.Redirect(w, r, "/orders?error="+url.QueryEscape("ID de pedido inválido"), http.StatusSeeOther)
 			return
 		}
 
 		quantity, err := strconv.Atoi(materialQuantity)
 		if err != nil {
-			http.Error(w, "Invalid quantity", http.StatusBadRequest)
+			http.Redirect(w, r, "/orders?error="+url.QueryEscape("Cantidad inválida"), http.StatusSeeOther)
 			return
 		}
 
@@ -171,36 +182,36 @@ func EditOrder(w http.ResponseWriter, r *http.Request) {
 			Note:                parsedNote,
 		}).Error
 		if err != nil {
-			http.Error(w, "Error updating order: "+err.Error(), http.StatusInternalServerError)
+			http.Redirect(w, r, "/orders?error="+url.QueryEscape("Error al actualizar pedido: "+err.Error()), http.StatusSeeOther)
 			return
 		}
 
-		http.Redirect(w, r, "/orders", http.StatusSeeOther)
+		http.Redirect(w, r, "/orders?success="+url.QueryEscape("Pedido actualizado exitosamente"), http.StatusSeeOther)
 		return
 	}
 
 	idStr := r.URL.Query().Get("id")
 	if idStr == "" {
-		http.Error(w, "Missing order ID", http.StatusBadRequest)
+		http.Error(w, "Falta el ID del pedido", http.StatusBadRequest)
 		return
 	}
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Invalid order ID", http.StatusBadRequest)
+		http.Error(w, "ID de pedido inválido", http.StatusBadRequest)
 		return
 	}
 
 	var order models.Order
 	err = config.DB.First(&order, id).Error
 	if err != nil {
-		http.Error(w, "Order not found: "+err.Error(), http.StatusNotFound)
+		http.Error(w, "Pedido no encontrado: "+err.Error(), http.StatusNotFound)
 		return
 	}
 
 	err = Templates.ExecuteTemplate(w, "edit_order", order)
 	if err != nil {
-		http.Error(w, "Error rendering template: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error al renderizar plantilla: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }

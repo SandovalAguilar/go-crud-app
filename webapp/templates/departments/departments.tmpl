@@ -1,9 +1,27 @@
 {{define "departments"}}
 {{ template "index" . }}
-
 <div class="container mt-4">
     <h1 class="text-center mb-4">Departamentos</h1>
-    
+
+    <!-- Error Alert -->
+    {{if .Error}}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error:</strong> {{.Error}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {{end}}
+
+    <!-- Success Alert -->
+    {{if .Success}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{.Success}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {{end}}
+
+    <!-- Add Department Button -->
+    <a href="/departments/add" class="btn btn-success mb-3">Agregar Departamento</a>
+
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover mx-auto">
             <thead class="table-dark">
@@ -21,18 +39,16 @@
                     <td>
                         <!-- Edit Button -->
                         <a href="/departments/edit?id={{.ID}}" class="btn btn-warning btn-sm">Editar</a>
-                        
+
                         <!-- Delete Button -->
-                        <a href="/departments/delete?department_name={{.DepartmentName}}" class="btn btn-danger btn-sm">Eliminar</a>
+                        <a href="/departments/delete?department_name={{.DepartmentName}}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('¿Está seguro de que desea eliminar este departamento?');">Eliminar</a>
                     </td>
                 </tr>
                 {{end}}
             </tbody>
         </table>
     </div>
-
-    <!-- Add Department Button -->
-    <a href="/departments/add" class="btn btn-success mb-3">Agregar Departamento</a>
 </div>
-
 {{end}}

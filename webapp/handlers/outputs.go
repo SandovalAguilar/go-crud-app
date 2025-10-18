@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 	"webapp/config"
 	"webapp/models"
 )
@@ -18,9 +20,13 @@ func ShowOutputs(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		Title   string
 		Outputs []models.InventoryOutput
+		Error   string
+		Success string
 	}{
 		Title:   "Inventario de Salidas",
 		Outputs: outputs,
+		Error:   r.URL.Query().Get("error"),
+		Success: r.URL.Query().Get("success"),
 	}
 
 	err = Templates.ExecuteTemplate(w, "outputs", data)
@@ -34,23 +40,28 @@ func DeleteOutput(w http.ResponseWriter, r *http.Request) {
 	materialName := r.URL.Query().Get("material_name")
 
 	if idStr == "" || materialName == "" {
-		http.Error(w, "Missing required parameters", http.StatusBadRequest)
+		http.Redirect(w, r, "/outputs?error="+url.QueryEscape("Faltan parámetros requeridos"), http.StatusSeeOther)
 		return
 	}
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Invalid ID parameter", http.StatusBadRequest)
+		http.Redirect(w, r, "/outputs?error="+url.QueryEscape("ID inválido"), http.StatusSeeOther)
 		return
 	}
 
 	err = config.DB.Where("id = ? AND nombre_material = ?", id, materialName).Delete(&models.InventoryOutput{}).Error
 	if err != nil {
-		http.Error(w, "Error deleting output: "+err.Error(), http.StatusInternalServerError)
+		errorMsg := err.Error()
+		if strings.Contains(errorMsg, "foreign key constraint") {
+			http.Redirect(w, r, "/outputs?error="+url.QueryEscape("No se puede eliminar la salida porque tiene registros asociados"), http.StatusSeeOther)
+		} else {
+			http.Redirect(w, r, "/outputs?error="+url.QueryEscape("Error al eliminar salida: "+errorMsg), http.StatusSeeOther)
+		}
 		return
 	}
 
-	http.Redirect(w, r, "/outputs", http.StatusSeeOther)
+	http.Redirect(w, r, "/outputs?success="+url.QueryEscape("Salida eliminada exitosamente"), http.StatusSeeOther)
 }
 
 func AddOutput(w http.ResponseWriter, r *http.Request) {
@@ -64,13 +75,13 @@ func AddOutput(w http.ResponseWriter, r *http.Request) {
 		employeeName := r.FormValue("employee_name")
 
 		if materialName == "" || departmentName == "" || quantity == "" || date == "" || delivered == "" || employeeName == "" {
-			http.Error(w, "Missing required fields", http.StatusBadRequest)
+			http.Redirect(w, r, "/outputs?error="+url.QueryEscape("Faltan campos requeridos"), http.StatusSeeOther)
 			return
 		}
 
 		quantityInt, err := strconv.Atoi(quantity)
 		if err != nil {
-			http.Error(w, "Invalid quantity", http.StatusBadRequest)
+			http.Redirect(w, r, "/outputs?error="+url.QueryEscape("Cantidad inválida"), http.StatusSeeOther)
 			return
 		}
 
@@ -91,15 +102,34 @@ func AddOutput(w http.ResponseWriter, r *http.Request) {
 
 		err = config.DB.Create(&output).Error
 		if err != nil {
-			http.Error(w, "Error adding output: "+err.Error(), http.StatusInternalServerError)
+			errorMsg := err.Error()
+			if strings.Contains(errorMsg, "foreign key constraint") || strings.Contains(errorMsg, "1452") {
+				http.Redirect(w, r, "/outputs?error="+url.QueryEscape("El departamento o empleado especificado no existe. Por favor, verifique los datos."), http.StatusSeeOther)
+			} else {
+				http.Redirect(w, r, "/outputs?error="+url.QueryEscape("Error al agregar salida: "+errorMsg), http.StatusSeeOther)
+			}
 			return
 		}
 
-		http.Redirect(w, r, "/outputs", http.StatusSeeOther)
+		http.Redirect(w, r, "/outputs?success="+url.QueryEscape("Salida agregada exitosamente"), http.StatusSeeOther)
 		return
 	}
 
-	if err := Templates.ExecuteTemplate(w, "add_output", nil); err != nil {
+	// Fetch departments and employees for dropdowns
+	var departments []models.Department
+	var employees []models.Employee
+	config.DB.Find(&departments)
+	config.DB.Find(&employees)
+
+	data := struct {
+		Departments []models.Department
+		Employees   []models.Employee
+	}{
+		Departments: departments,
+		Employees:   employees,
+	}
+
+	if err := Templates.ExecuteTemplate(w, "add_output", data); err != nil {
 		http.Error(w, "Error rendering template: "+err.Error(), http.StatusInternalServerError)
 	}
 }
@@ -116,13 +146,13 @@ func EditOutput(w http.ResponseWriter, r *http.Request) {
 		employeeName := r.FormValue("employee_name")
 
 		if idStr == "" || materialName == "" || departmentName == "" || quantity == "" || date == "" || delivered == "" || employeeName == "" {
-			http.Error(w, "Missing required fields", http.StatusBadRequest)
+			http.Redirect(w, r, "/outputs?error="+url.QueryEscape("Faltan campos requeridos"), http.StatusSeeOther)
 			return
 		}
 
 		quantityInt, err := strconv.Atoi(quantity)
 		if err != nil {
-			http.Error(w, "Invalid quantity", http.StatusBadRequest)
+			http.Redirect(w, r, "/outputs?error="+url.QueryEscape("Cantidad inválida"), http.StatusSeeOther)
 			return
 		}
 
@@ -133,7 +163,7 @@ func EditOutput(w http.ResponseWriter, r *http.Request) {
 
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			http.Error(w, "Invalid ID", http.StatusBadRequest)
+			http.Redirect(w, r, "/outputs?error="+url.QueryEscape("ID inválido"), http.StatusSeeOther)
 			return
 		}
 
@@ -147,35 +177,56 @@ func EditOutput(w http.ResponseWriter, r *http.Request) {
 			EmployeeName:   employeeName,
 		}).Error
 		if err != nil {
-			http.Error(w, "Error updating output: "+err.Error(), http.StatusInternalServerError)
+			errorMsg := err.Error()
+			if strings.Contains(errorMsg, "foreign key constraint") || strings.Contains(errorMsg, "1452") {
+				http.Redirect(w, r, "/outputs?error="+url.QueryEscape("El departamento o empleado especificado no existe. Por favor, verifique los datos."), http.StatusSeeOther)
+			} else {
+				http.Redirect(w, r, "/outputs?error="+url.QueryEscape("Error al actualizar salida: "+errorMsg), http.StatusSeeOther)
+			}
 			return
 		}
 
-		http.Redirect(w, r, "/outputs", http.StatusSeeOther)
+		http.Redirect(w, r, "/outputs?success="+url.QueryEscape("Salida actualizada exitosamente"), http.StatusSeeOther)
 		return
 	}
 
 	idStr := r.URL.Query().Get("id")
 	if idStr == "" {
-		http.Error(w, "Missing entry ID", http.StatusBadRequest)
+		http.Error(w, "Falta el ID de salida", http.StatusBadRequest)
 		return
 	}
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Invalid entry ID", http.StatusBadRequest)
+		http.Error(w, "ID de salida inválido", http.StatusBadRequest)
 		return
 	}
 
 	var output models.InventoryOutput
 	err = config.DB.First(&output, id).Error
 	if err != nil {
-		http.Error(w, "Output not found: "+err.Error(), http.StatusNotFound)
+		http.Error(w, "Salida no encontrada: "+err.Error(), http.StatusNotFound)
 		return
 	}
 
-	err = Templates.ExecuteTemplate(w, "edit_output", output)
+	// Fetch departments and employees for dropdowns
+	var departments []models.Department
+	var employees []models.Employee
+	config.DB.Find(&departments)
+	config.DB.Find(&employees)
+
+	data := struct {
+		Output      models.InventoryOutput
+		Departments []models.Department
+		Employees   []models.Employee
+	}{
+		Output:      output,
+		Departments: departments,
+		Employees:   employees,
+	}
+
+	err = Templates.ExecuteTemplate(w, "edit_output", data)
 	if err != nil {
-		http.Error(w, "Error rendering template: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error al renderizar plantilla: "+err.Error(), http.StatusInternalServerError)
 	}
 }

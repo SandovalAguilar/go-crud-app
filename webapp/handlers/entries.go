@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 	"webapp/config"
 	"webapp/models"
 )
@@ -18,9 +20,13 @@ func ShowEntries(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		Title   string
 		Entries []models.InventoryEntry
+		Error   string
+		Success string
 	}{
 		Title:   "Inventario de Entradas",
 		Entries: inventoryEntries,
+		Error:   r.URL.Query().Get("error"),
+		Success: r.URL.Query().Get("success"),
 	}
 
 	err = Templates.ExecuteTemplate(w, "entries", data)
@@ -39,13 +45,13 @@ func AddEntry(w http.ResponseWriter, r *http.Request) {
 		entryDate := r.FormValue("entry_date")
 
 		if materialName == "" || quantity == "" || supplier == "" || entryDate == "" {
-			http.Error(w, "Missing required fields", http.StatusBadRequest)
+			http.Redirect(w, r, "/entries?error="+url.QueryEscape("Faltan campos requeridos"), http.StatusSeeOther)
 			return
 		}
 
 		quantityInt, err := strconv.Atoi(quantity)
 		if err != nil {
-			http.Error(w, "Invalid quantity", http.StatusBadRequest)
+			http.Redirect(w, r, "/entries?error="+url.QueryEscape("Cantidad inválida"), http.StatusSeeOther)
 			return
 		}
 
@@ -70,11 +76,11 @@ func AddEntry(w http.ResponseWriter, r *http.Request) {
 
 		err = config.DB.Create(&entry).Error
 		if err != nil {
-			http.Error(w, "Error creating entry: "+err.Error(), http.StatusInternalServerError)
+			http.Redirect(w, r, "/entries?error="+url.QueryEscape("Error al crear entrada: "+err.Error()), http.StatusSeeOther)
 			return
 		}
 
-		http.Redirect(w, r, "/entries", http.StatusSeeOther)
+		http.Redirect(w, r, "/entries?success="+url.QueryEscape("Entrada agregada exitosamente"), http.StatusSeeOther)
 		return
 	}
 
@@ -88,23 +94,28 @@ func DeleteEntry(w http.ResponseWriter, r *http.Request) {
 	materialName := r.URL.Query().Get("material_name")
 
 	if idStr == "" || materialName == "" {
-		http.Error(w, "Missing required parameters", http.StatusBadRequest)
+		http.Redirect(w, r, "/entries?error="+url.QueryEscape("Faltan parámetros requeridos"), http.StatusSeeOther)
 		return
 	}
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Invalid ID parameter", http.StatusBadRequest)
+		http.Redirect(w, r, "/entries?error="+url.QueryEscape("ID inválido"), http.StatusSeeOther)
 		return
 	}
 
 	err = config.DB.Where("id = ? AND nombre_material = ?", id, materialName).Delete(&models.InventoryEntry{}).Error
 	if err != nil {
-		http.Error(w, "Error deleting entry: "+err.Error(), http.StatusInternalServerError)
+		errorMsg := err.Error()
+		if strings.Contains(errorMsg, "foreign key constraint") {
+			http.Redirect(w, r, "/entries?error="+url.QueryEscape("No se puede eliminar la entrada porque tiene registros asociados"), http.StatusSeeOther)
+		} else {
+			http.Redirect(w, r, "/entries?error="+url.QueryEscape("Error al eliminar entrada: "+errorMsg), http.StatusSeeOther)
+		}
 		return
 	}
 
-	http.Redirect(w, r, "/entries", http.StatusSeeOther)
+	http.Redirect(w, r, "/entries?success="+url.QueryEscape("Entrada eliminada exitosamente"), http.StatusSeeOther)
 }
 
 func EditEntry(w http.ResponseWriter, r *http.Request) {
@@ -118,19 +129,19 @@ func EditEntry(w http.ResponseWriter, r *http.Request) {
 		note := r.FormValue("note")
 
 		if idStr == "" || materialName == "" || supplierName == "" || materialQuantity == "" || entryDate == "" {
-			http.Error(w, "All required fields must be filled", http.StatusBadRequest)
+			http.Redirect(w, r, "/entries?error="+url.QueryEscape("Todos los campos requeridos deben estar llenos"), http.StatusSeeOther)
 			return
 		}
 
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			http.Error(w, "Invalid entry ID", http.StatusBadRequest)
+			http.Redirect(w, r, "/entries?error="+url.QueryEscape("ID de entrada inválido"), http.StatusSeeOther)
 			return
 		}
 
 		quantity, err := strconv.Atoi(materialQuantity)
 		if err != nil {
-			http.Error(w, "Invalid quantity", http.StatusBadRequest)
+			http.Redirect(w, r, "/entries?error="+url.QueryEscape("Cantidad inválida"), http.StatusSeeOther)
 			return
 		}
 
@@ -153,35 +164,35 @@ func EditEntry(w http.ResponseWriter, r *http.Request) {
 			Note:                parsedNote,
 		}).Error
 		if err != nil {
-			http.Error(w, "Error updating entry: "+err.Error(), http.StatusInternalServerError)
+			http.Redirect(w, r, "/entries?error="+url.QueryEscape("Error al actualizar entrada: "+err.Error()), http.StatusSeeOther)
 			return
 		}
 
-		http.Redirect(w, r, "/entries", http.StatusSeeOther)
+		http.Redirect(w, r, "/entries?success="+url.QueryEscape("Entrada actualizada exitosamente"), http.StatusSeeOther)
 		return
 	}
 
 	idStr := r.URL.Query().Get("id")
 	if idStr == "" {
-		http.Error(w, "Missing entry ID", http.StatusBadRequest)
+		http.Error(w, "Falta el ID de entrada", http.StatusBadRequest)
 		return
 	}
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Invalid entry ID", http.StatusBadRequest)
+		http.Error(w, "ID de entrada inválido", http.StatusBadRequest)
 		return
 	}
 
 	var entry models.InventoryEntry
 	err = config.DB.First(&entry, id).Error
 	if err != nil {
-		http.Error(w, "Entry not found: "+err.Error(), http.StatusNotFound)
+		http.Error(w, "Entrada no encontrada: "+err.Error(), http.StatusNotFound)
 		return
 	}
 
 	err = Templates.ExecuteTemplate(w, "edit_entry", entry)
 	if err != nil {
-		http.Error(w, "Error rendering template: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error al renderizar plantilla: "+err.Error(), http.StatusInternalServerError)
 	}
 }
