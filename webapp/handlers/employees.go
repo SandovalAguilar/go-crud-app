@@ -3,7 +3,6 @@ package handlers
 import (
 	"net/http"
 	"net/url"
-	"regexp"
 	"strconv"
 	"strings"
 	"webapp/config"
@@ -40,24 +39,44 @@ func AddEmployee(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		employeeName := r.FormValue("employee_name")
 		departmentName := r.FormValue("department_name")
-		isAlnum := regexp.MustCompile(`^[a-zA-Z0-9 ]+$`).MatchString
-		if !isAlnum(departmentName) {
-			http.Error(w, "Department name must contain only alphanumeric characters", http.StatusBadRequest)
+
+		if employeeName == "" || departmentName == "" {
+			http.Redirect(w, r, "/employees?error="+url.QueryEscape("Todos los campos son requeridos"), http.StatusSeeOther)
 			return
 		}
+
 		employee := models.Employee{
 			EmployeeName:   employeeName,
 			DepartmentName: departmentName,
 		}
+
 		err := config.DB.Create(&employee).Error
 		if err != nil {
-			http.Redirect(w, r, "/employees?error="+url.QueryEscape("Error adding employee: "+err.Error()), http.StatusSeeOther)
+			errorMsg := err.Error()
+			// Check for foreign key constraint error (department doesn't exist)
+			if strings.Contains(errorMsg, "foreign key constraint") || strings.Contains(errorMsg, "1452") {
+				http.Redirect(w, r, "/employees?error="+url.QueryEscape("No se puede agregar el empleado porque el departamento especificado no existe. Por favor, cree el departamento primero."), http.StatusSeeOther)
+			} else {
+				http.Redirect(w, r, "/employees?error="+url.QueryEscape("Error al agregar empleado: "+errorMsg), http.StatusSeeOther)
+			}
 			return
 		}
+
 		http.Redirect(w, r, "/employees?success="+url.QueryEscape("Empleado agregado exitosamente"), http.StatusSeeOther)
 		return
 	}
-	Templates.ExecuteTemplate(w, "add_employee", nil)
+
+	// Fetch all departments for the dropdown
+	var departments []models.Department
+	config.DB.Find(&departments)
+
+	data := struct {
+		Departments []models.Department
+	}{
+		Departments: departments,
+	}
+
+	Templates.ExecuteTemplate(w, "add_employee", data)
 }
 
 func DeleteEmployeeByName(w http.ResponseWriter, r *http.Request) {

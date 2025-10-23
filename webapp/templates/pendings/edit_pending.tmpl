@@ -1,35 +1,45 @@
 {{define "edit_pending"}}
 {{ template "index" . }}
-
 <div class="container mt-4">
     <h1 class="text-center mb-4">Editar Material Pendiente</h1>
-
     <form action="/pendings/edit" method="POST" class="mx-auto" style="max-width: 500px;">
         <!-- Hidden ID to identify the material being edited -->
-        <input type="hidden" name="id" value="{{.ID}}">
+        <input type="hidden" name="id" value="{{.Pending.ID}}">
 
         <!-- Material Name (Required) -->
         <div class="mb-3">
             <label for="material_name" class="form-label">Nombre del Material</label>
-            <input type="text" class="form-control" id="material_name" name="material_name" value="{{.MaterialName}}" required>
+            <input type="text" class="form-control" id="material_name" name="material_name" value="{{.Pending.MaterialName}}" required>
         </div>
 
-        <!-- Employee Name (Required) -->
+        <!-- Employee Name (Required) - Dropdown -->
         <div class="mb-3">
             <label for="employee_name" class="form-label">Nombre del Empleado</label>
-            <input type="text" class="form-control" id="employee_name" name="employee_name" value="{{.EmployeeName}}" required>
+            <select class="form-select" id="employee_name" name="employee_name" required>
+                <option value="">Seleccione un empleado</option>
+                {{range .Employees}}
+                <option value="{{.EmployeeName}}" {{if eq $.Pending.EmployeeName .EmployeeName}}selected{{end}}>{{.EmployeeName}}</option>
+                {{end}}
+            </select>
+            <div class="form-text">Si el empleado no aparece, <a href="/employees/add" target="_blank">créelo aquí</a>.</div>
         </div>
 
-        <!-- Department Name (Required) -->
+        <!-- Department Name (Required) - Dropdown -->
         <div class="mb-3">
             <label for="department_name" class="form-label">Nombre del Departamento</label>
-            <input type="text" class="form-control" id="department_name" name="department_name" value="{{.DepartmentName}}" required>
+            <select class="form-select" id="department_name" name="department_name" required>
+                <option value="">Seleccione un departamento</option>
+                {{range .Departments}}
+                <option value="{{.DepartmentName}}" {{if eq $.Pending.DepartmentName .DepartmentName}}selected{{end}}>{{.DepartmentName}}</option>
+                {{end}}
+            </select>
+            <div class="form-text">Si el departamento no aparece, <a href="/departments/add" target="_blank">créelo aquí</a>.</div>
         </div>
 
         <!-- Date (Required) -->
         <div class="mb-3">
             <label for="date" class="form-label">Fecha</label>
-            <input type="date" class="form-control" id="date" name="date" value="{{.Date}}" required>
+            <input type="date" class="form-control" id="date" name="date" value="{{.Pending.Date}}" required>
         </div>
 
         <!-- Submit and Cancel buttons -->
@@ -37,5 +47,4 @@
         <a href="/pendings" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
-
 {{end}}

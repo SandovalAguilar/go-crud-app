@@ -1,56 +1,66 @@
 {{define "edit_output"}}
 {{ template "index" . }}
-
 <div class="container mt-4">
     <h1 class="text-center mb-4">Editar Salida de Inventario</h1>
-
     <form action="/outputs/edit" method="POST" class="mx-auto" style="max-width: 500px;">
         <!-- Hidden ID to identify which entry to edit -->
-        <input type="hidden" name="id" value="{{.ID}}">
+        <input type="hidden" name="id" value="{{.Output.ID}}">
 
         <!-- Material Name (Required) -->
         <div class="mb-3">
             <label for="material_name" class="form-label">Nombre del material</label>
-            <input type="text" class="form-control" id="material_name" name="material_name" value="{{.MaterialName}}" required>
+            <input type="text" class="form-control" id="material_name" name="material_name" value="{{.Output.MaterialName}}" required>
         </div>
 
-        <!-- Department Name (Required) -->
+        <!-- Department Name (Required) - Dropdown -->
         <div class="mb-3">
             <label for="department_name" class="form-label">Departamento</label>
-            <input type="text" class="form-control" id="department_name" name="department_name" value="{{.DepartmentName}}" required>
+            <select class="form-select" id="department_name" name="department_name" required>
+                <option value="">Seleccione un departamento</option>
+                {{range .Departments}}
+                <option value="{{.DepartmentName}}" {{if eq $.Output.DepartmentName .DepartmentName}}selected{{end}}>{{.DepartmentName}}</option>
+                {{end}}
+            </select>
+            <div class="form-text">Si el departamento no aparece, <a href="/departments/add" target="_blank">créelo aquí</a>.</div>
         </div>
 
         <!-- Quantity (Required) -->
         <div class="mb-3">
             <label for="quantity" class="form-label">Cantidad</label>
-            <input type="number" class="form-control" id="quantity" name="quantity" value="{{.Quantity}}" min="1" required>
+            <input type="number" class="form-control" id="quantity" name="quantity" value="{{.Output.Quantity}}" min="1" required>
         </div>
 
         <!-- Description (Optional) -->
         <div class="mb-3">
             <label for="description" class="form-label">Descripción</label>
-            <input type="text" class="form-control" id="description" name="description" value="{{if .Description}}{{.Description}}{{end}}">
+            <input type="text" class="form-control" id="description" name="description" value="{{if .Output.Description}}{{.Output.Description}}{{end}}">
         </div>
 
         <!-- Date (Required) -->
         <div class="mb-3">
             <label for="date" class="form-label">Fecha</label>
-            <input type="date" class="form-control" id="date" name="date" value="{{.Date}}" required>
+            <input type="date" class="form-control" id="date" name="date" value="{{.Output.Date}}" required>
         </div>
 
         <!-- Delivered (Required) -->
         <div class="mb-3">
             <label for="delivered" class="form-label">Entregado</label>
-            <select class="form-control" id="delivered" name="delivered" required>
-                <option value="no" {{if eq .Delivered "no"}}selected{{end}}>No</option>
-                <option value="si" {{if eq .Delivered "si"}}selected{{end}}>Sí</option>
+            <select class="form-select" id="delivered" name="delivered" required>
+                <option value="no" {{if eq .Output.Delivered "no"}}selected{{end}}>No</option>
+                <option value="si" {{if eq .Output.Delivered "si"}}selected{{end}}>Sí</option>
             </select>
         </div>
 
-        <!-- Employee Name (Required) -->
+        <!-- Employee Name (Required) - Dropdown -->
         <div class="mb-3">
             <label for="employee_name" class="form-label">Empleado</label>
-            <input type="text" class="form-control" id="employee_name" name="employee_name" value="{{.EmployeeName}}" required>
+            <select class="form-select" id="employee_name" name="employee_name" required>
+                <option value="">Seleccione un empleado</option>
+                {{range .Employees}}
+                <option value="{{.EmployeeName}}" {{if eq $.Output.EmployeeName .EmployeeName}}selected{{end}}>{{.EmployeeName}}</option>
+                {{end}}
+            </select>
+            <div class="form-text">Si el empleado no aparece, <a href="/employees/add" target="_blank">créelo aquí</a>.</div>
         </div>
 
         <!-- Submit and Cancel buttons -->
@@ -58,5 +68,4 @@
         <a href="/outputs" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
-
 {{end}}

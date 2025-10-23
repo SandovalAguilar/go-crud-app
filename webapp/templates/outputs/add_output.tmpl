@@ -1,9 +1,7 @@
 {{define "add_output"}}
 {{ template "index" . }}
-
 <div class="container mt-4">
     <h1 class="text-center mb-4">Agregar Salida de Inventario</h1>
-
     <form action="/outputs/add" method="POST" class="mx-auto" style="max-width: 500px;">
         <!-- Nombre del Material (Required) -->
         <div class="mb-3">
@@ -11,10 +9,16 @@
             <input type="text" class="form-control" id="material_name" name="material_name" required>
         </div>
 
-        <!-- Departamento (Required) -->
+        <!-- Departamento (Required) - Dropdown -->
         <div class="mb-3">
             <label for="department_name" class="form-label">Departamento</label>
-            <input type="text" class="form-control" id="department_name" name="department_name" required>
+            <select class="form-select" id="department_name" name="department_name" required>
+                <option value="">Seleccione un departamento</option>
+                {{range .Departments}}
+                <option value="{{.DepartmentName}}">{{.DepartmentName}}</option>
+                {{end}}
+            </select>
+            <div class="form-text">Si el departamento no aparece, <a href="/departments/add" target="_blank">créelo aquí</a>.</div>
         </div>
 
         <!-- Cantidad (Required) -->
@@ -38,21 +42,26 @@
         <!-- Entregado (Required) -->
         <div class="mb-3">
             <label for="delivered" class="form-label">Entregado</label>
-            <select class="form-control" id="delivered" name="delivered" required>
+            <select class="form-select" id="delivered" name="delivered" required>
                 <option value="no" selected>No</option>
                 <option value="si">Sí</option>
             </select>
         </div>
 
-        <!-- Empleado (Required) -->
+        <!-- Empleado (Required) - Dropdown -->
         <div class="mb-3">
             <label for="employee_name" class="form-label">Empleado</label>
-            <input type="text" class="form-control" id="employee_name" name="employee_name" required>
+            <select class="form-select" id="employee_name" name="employee_name" required>
+                <option value="">Seleccione un empleado</option>
+                {{range .Employees}}
+                <option value="{{.EmployeeName}}">{{.EmployeeName}}</option>
+                {{end}}
+            </select>
+            <div class="form-text">Si el empleado no aparece, <a href="/employees/add" target="_blank">créelo aquí</a>.</div>
         </div>
 
         <button type="submit" class="btn btn-success">Agregar Salida</button>
         <a href="/outputs" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
-
 {{end}}

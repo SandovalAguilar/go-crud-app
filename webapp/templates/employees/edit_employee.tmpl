@@ -1,30 +1,31 @@
 {{define "edit_employee"}}
 {{ template "index" . }}
-
 <div class="container mt-4">
     <h1 class="text-center mb-4">Editar Empleado</h1>
-
     <!-- Edit Employee Form -->
     <form action="/employees/edit?id={{.Employee.ID}}" method="POST" class="mx-auto" style="max-width: 500px;">
-        
+
         <!-- Hidden ID field (No need to edit the ID) -->
         <input type="hidden" name="id" value="{{.Employee.ID}}">
-        
+
         <div class="mb-3">
             <label for="employee_name" class="form-label">Nombre del empleado</label>
             <!-- Pre-fill the employee's name for editing -->
             <input type="text" class="form-control" id="employee_name" name="employee_name" value="{{.Employee.EmployeeName}}" required>
         </div>
-
         <div class="mb-3">
             <label for="department_name" class="form-label">Departamento</label>
-            <!-- Pre-fill the department name for editing -->
-            <input type="text" class="form-control" id="department_name" name="department_name" value="{{.Employee.DepartmentName}}" required>
+            <!-- Dropdown with pre-selected current department -->
+            <select class="form-select" id="department_name" name="department_name" required>
+                <option value="">Seleccione un departamento</option>
+                {{range .Departments}}
+                <option value="{{.DepartmentName}}" {{if eq $.Employee.DepartmentName .DepartmentName}}selected{{end}}>{{.DepartmentName}}</option>
+                {{end}}
+            </select>
+            <div class="form-text">Si el departamento no aparece en la lista, <a href="/departments/add" target="_blank">créelo aquí</a>.</div>
         </div>
-
         <button type="submit" class="btn btn-success">Actualizar</button>
         <a href="/employees" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
-
 {{end}}
