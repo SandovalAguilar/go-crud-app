@@ -1,27 +1,29 @@
 {{define "general"}}
 {{ template "index" . }}
-
 <div class="container mt-4">
-    <h1 class="text-center mb-4">Inventario General</h1>
+    <h1 class="text-center mb-4">{{.Title}}</h1>
 
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover mx-auto">
             <thead class="table-dark">
                 <tr class="text-center">
                     <th>Material</th>
-                    <th>Inventario Total</th>
+                    <th>Total Entradas</th>
+                    <th>Total Salidas</th>
+                    <th>Stock Disponible</th>
                 </tr>
             </thead>
             <tbody class="text-center">
-                {{range .Items}}
+                {{range .Inventory}}
                 <tr>
                     <td>{{.MaterialName}}</td>
-                    <td>{{.Total}}</td>
+                    <td class="text-success">{{.TotalEntries}}</td>
+                    <td class="text-danger">{{.TotalOutputs}}</td>
+                    <td class="fw-bold">{{.AvailableStock}}</td>
                 </tr>
                 {{end}}
             </tbody>
         </table>
     </div>
 </div>
-
 {{end}}

@@ -73,12 +73,51 @@ CREATE TABLE material_pendiente_requisicion (
     FOREIGN KEY (departamento_nombre) REFERENCES departamentos(nombre_departamento)
 );
 
+DROP VIEW IF EXISTS vw_inventario;
+
 CREATE VIEW vw_inventario AS
 SELECT
-    i.nombre_material,
+    TRIM(i.nombre_material) as nombre_material,
     IFNULL(SUM(i.cantidad), 0) - IFNULL(SUM(s.cantidad), 0) AS total
 FROM inventario_entradas i
-LEFT JOIN inventario_salidas s ON i.nombre_material = s.nombre_material
-GROUP BY i.nombre_material;
+INNER JOIN inventario_salidas s 
+    ON LOWER(TRIM(i.nombre_material)) = LOWER(TRIM(s.nombre_material))
+GROUP BY TRIM(i.nombre_material);
+
+CREATE VIEW vw_inventario AS
+SELECT
+    TRIM(i.nombre_material) AS nombre_material,
+    IFNULL(SUM(i.cantidad), 0) - IFNULL(SUM(s.cantidad), 0) AS total
+FROM inventario_entradas i
+LEFT JOIN inventario_salidas s 
+    ON LOWER(TRIM(i.nombre_material)) = LOWER(TRIM(s.nombre_material))
+GROUP BY TRIM(i.nombre_material);
+
 
 SELECT * FROM vw_inventario;
+SELECT * FROM inventario_entradas;
+SELECT * FROM inventario_salidas;
+
+
+SELECT id, fecha_pedido, fecha_entrega FROM pedidos WHERE id = 31;
+
+SELECT
+    LOWER(TRIM(i.nombre_material)) AS material,
+    SUM(i.cantidad) AS entradas,
+    IFNULL(SUM(s.cantidad), 0) AS salidas,
+    IFNULL(SUM(i.cantidad), 0) - IFNULL(SUM(s.cantidad), 0) AS total
+FROM inventario_entradas i
+LEFT JOIN (
+    SELECT nombre_material, SUM(cantidad) AS cantidad
+    FROM inventario_salidas
+    GROUP BY nombre_material
+) s ON LOWER(TRIM(i.nombre_material)) = LOWER(TRIM(s.nombre_material))
+GROUP BY LOWER(TRIM(i.nombre_material));
+
+
+
+
+
+DROP VIEW IF EXISTS vw_inventario;
+
+

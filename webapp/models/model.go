@@ -22,25 +22,23 @@ func (Employee) TableName() string {
 	return "empleados"
 }
 
-type Inventory struct {
-	MaterialName string  `gorm:"column:nombre_material"`
-	Total        float64 `gorm:"column:total"`
-}
-
-func (Inventory) TableName() string {
-	return "vw_inventario"
+type InventoryBalance struct {
+	MaterialName   string
+	TotalEntries   int
+	TotalOutputs   int
+	AvailableStock int
 }
 
 type Order struct {
-	ID                  uint    `gorm:"primaryKey;autoIncrement"`
-	MaterialName        string  `gorm:"type:varchar(100);column:nombre_material"`
-	SupplierName        string  `gorm:"type:varchar(255);column:nombre_proveedor"`
-	MaterialDescription *string `gorm:"type:varchar(255);column:descripcion_material"`
-	MaterialQuantity    int     `gorm:"column:cantidad_material"`
-	Status              string  `gorm:"type:enum('Pendiente', 'Aprobado', 'Enviado', 'Recibido');default:'Pendiente';column:estado"`
-	Note                *string `gorm:"type:text;column:nota"`
-	RequestDate         string  `gorm:"type:date;column:fecha_pedido"`
-	DeliveryDate        *string `gorm:"type:date;column:fecha_entrega"`
+	ID                  uint       `gorm:"primaryKey;autoIncrement"`
+	MaterialName        string     `gorm:"type:varchar(100);column:nombre_material"`
+	SupplierName        string     `gorm:"type:varchar(255);column:nombre_proveedor"`
+	MaterialDescription *string    `gorm:"type:varchar(255);column:descripcion_material"`
+	MaterialQuantity    int        `gorm:"column:cantidad_material"`
+	Status              string     `gorm:"type:enum('Pendiente', 'Aprobado', 'Enviado', 'Recibido');default:'Pendiente';column:estado"`
+	Note                *string    `gorm:"type:text;column:nota"`
+	RequestDate         time.Time  `gorm:"type:date;column:fecha_pedido"`
+	DeliveryDate        *time.Time `gorm:"type:date;column:fecha_entrega"`
 }
 
 func (Order) TableName() string {
@@ -48,13 +46,13 @@ func (Order) TableName() string {
 }
 
 type InventoryEntry struct {
-	ID                  uint    `gorm:"primaryKey;autoIncrement"`
-	EntryDate           string  `gorm:"type:date;column:fecha_entrada"`
-	MaterialName        string  `gorm:"type:varchar(100);column:nombre_material"`
-	Quantity            int     `gorm:"column:cantidad"`
-	MaterialDescription *string `gorm:"type:varchar(255);column:descripcion_material"`
-	SupplierName        string  `gorm:"type:varchar(100);column:nombre_proveedor"`
-	Note                *string `gorm:"type:text;column:nota"`
+	ID                  uint      `gorm:"primaryKey;autoIncrement"`
+	EntryDate           time.Time `gorm:"type:date;column:fecha_entrada"`
+	MaterialName        string    `gorm:"type:varchar(100);column:nombre_material"`
+	Quantity            int       `gorm:"column:cantidad"`
+	MaterialDescription *string   `gorm:"type:varchar(255);column:descripcion_material"`
+	SupplierName        string    `gorm:"type:varchar(100);column:nombre_proveedor"`
+	Note                *string   `gorm:"type:text;column:nota"`
 }
 
 func (InventoryEntry) TableName() string {
@@ -62,14 +60,14 @@ func (InventoryEntry) TableName() string {
 }
 
 type InventoryOutput struct {
-	ID             uint    `gorm:"primaryKey;autoIncrement"`
-	MaterialName   string  `gorm:"type:varchar(100);column:nombre_material"`
-	DepartmentName string  `gorm:"type:varchar(100);column:departamento_nombre"`
-	Quantity       int     `gorm:"column:cantidad"`
-	Description    *string `gorm:"type:varchar(255);column:descripcion"`
-	Date           string  `gorm:"type:date;column:fecha"`
-	Delivered      string  `gorm:"type:enum('si','no');default:'no';column:entregado"`
-	EmployeeName   string  `gorm:"type:varchar(100);column:empleado_nombre"`
+	ID             uint      `gorm:"primaryKey;autoIncrement"`
+	MaterialName   string    `gorm:"type:varchar(100);column:nombre_material"`
+	DepartmentName string    `gorm:"type:varchar(100);column:departamento_nombre"`
+	Quantity       int       `gorm:"column:cantidad"`
+	Description    *string   `gorm:"type:varchar(255);column:descripcion"`
+	Date           time.Time `gorm:"type:date;column:fecha"`
+	Delivered      string    `gorm:"type:enum('si','no');default:'no';column:entregado"`
+	EmployeeName   string    `gorm:"type:varchar(100);column:empleado_nombre"`
 }
 
 func (InventoryOutput) TableName() string {

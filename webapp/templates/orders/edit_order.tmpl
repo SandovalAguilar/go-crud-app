@@ -1,9 +1,7 @@
 {{define "edit_order"}}
 {{ template "index" . }}
-
 <div class="container mt-4">
     <h1 class="text-center mb-4">Editar Pedido</h1>
-
     <form action="/orders/edit" method="POST" class="mx-auto" style="max-width: 500px;">
         <!-- Hidden ID -->
         <input type="hidden" name="id" value="{{.ID}}">
@@ -11,60 +9,74 @@
         <!-- Material Name (Required) -->
         <div class="mb-3">
             <label for="material_name" class="form-label">Nombre del material</label>
-            <input type="text" class="form-control" id="material_name" name="material_name" value="{{.MaterialName}}" required>
+            <input type="text" class="form-control" id="material_name" name="material_name" value="{{.MaterialName}}" {{if eq .Status "Recibido"}}readonly{{end}} required>
         </div>
 
         <!-- Supplier Name (Required) -->
         <div class="mb-3">
             <label for="supplier_name" class="form-label">Proveedor</label>
-            <input type="text" class="form-control" id="supplier_name" name="supplier_name" value="{{.SupplierName}}" required>
+            <input type="text" class="form-control" id="supplier_name" name="supplier_name" value="{{.SupplierName}}" {{if eq .Status "Recibido"}}readonly{{end}} required>
         </div>
 
         <!-- Material Description (Optional) -->
         <div class="mb-3">
             <label for="material_description" class="form-label">Descripción del material</label>
-            <input type="text" class="form-control" id="material_description" name="material_description" value="{{if .MaterialDescription}}{{.MaterialDescription}}{{end}}">
+            <input type="text" class="form-control" id="material_description" name="material_description" value="{{if .MaterialDescription}}{{.MaterialDescription}}{{end}}" {{if eq .Status "Recibido"}}readonly{{end}}>
         </div>
 
         <!-- Quantity (Required) -->
         <div class="mb-3">
             <label for="material_quantity" class="form-label">Cantidad del material</label>
-            <input type="number" class="form-control" id="material_quantity" name="material_quantity" value="{{.MaterialQuantity}}" min="1" required>
+            <input type="number" class="form-control" id="material_quantity" name="material_quantity" value="{{.MaterialQuantity}}" min="1" {{if eq .Status "Recibido"}}readonly{{end}} required>
         </div>
 
         <!-- Status (Required) -->
         <div class="mb-3">
             <label for="status" class="form-label">Estado</label>
-            <select class="form-control" id="status" name="status" required>
-                <option value="">Seleccione...</option>
-                <option value="Pendiente" {{if eq .Status "Pendiente"}}selected{{end}}>Pendiente</option>
-                <option value="Aprobado" {{if eq .Status "Aprobado"}}selected{{end}}>Aprobado</option>
-                <option value="Enviado" {{if eq .Status "Enviado"}}selected{{end}}>Enviado</option>
-                <option value="Recibido" {{if eq .Status "Recibido"}}selected{{end}}>Recibido</option>
-            </select>
+            {{if eq .Status "Recibido"}}
+                <!-- Read-only display when Recibido -->
+                <input type="text" class="form-control" value="Recibido" readonly>
+                <input type="hidden" name="status" value="Recibido">
+                <div class="form-text text-warning">⚠️ El pedido ya fue recibido y no se puede cambiar el estado.</div>
+            {{else}}
+                <!-- Editable dropdown when not Recibido -->
+                <select class="form-select" id="status" name="status" required>
+                    <option value="">Seleccione...</option>
+                    <option value="Pendiente" {{if eq .Status "Pendiente"}}selected{{end}}>Pendiente</option>
+                    <option value="Aprobado" {{if eq .Status "Aprobado"}}selected{{end}}>Aprobado</option>
+                    <option value="Enviado" {{if eq .Status "Enviado"}}selected{{end}}>Enviado</option>
+                    <option value="Recibido" {{if eq .Status "Recibido"}}selected{{end}}>Recibido</option>
+                </select>
+            {{end}}
         </div>
 
         <!-- Note (Optional) -->
         <div class="mb-3">
             <label for="note" class="form-label">Nota</label>
-            <textarea class="form-control" id="note" name="note" rows="3">{{if .Note}}{{.Note}}{{end}}</textarea>
+            <textarea class="form-control" id="note" name="note" rows="3" {{if eq .Status "Recibido"}}readonly{{end}}>{{if .Note}}{{.Note}}{{end}}</textarea>
         </div>
 
         <!-- Request Date (Required) -->
         <div class="mb-3">
             <label for="request_date" class="form-label">Fecha de pedido</label>
-            <input type="date" class="form-control" id="request_date" name="request_date" value="{{.RequestDate}}" required>
+            <input type="date" class="form-control" id="request_date" name="request_date" value="{{formatDate .RequestDate}}" {{if eq .Status "Recibido"}}readonly{{end}} required>
         </div>
 
         <!-- Delivery Date (Optional) -->
         <div class="mb-3">
             <label for="delivery_date" class="form-label">Fecha de entrega</label>
-            <input type="date" class="form-control" id="delivery_date" name="delivery_date" value="{{if .DeliveryDate}}{{.DeliveryDate}}{{end}}">
+            <input type="date" class="form-control" id="delivery_date" name="delivery_date" value="{{formatDate .DeliveryDate}}" {{if eq .Status "Recibido"}}readonly{{end}}>
         </div>
 
-        <button type="submit" class="btn btn-success">Guardar Cambios</button>
-        <a href="/orders" class="btn btn-secondary">Cancelar</a>
+        {{if eq .Status "Recibido"}}
+            <div class="alert alert-info">
+                <strong>ℹ️ Información:</strong> Este pedido ya fue recibido. Los campos están bloqueados para evitar cambios accidentales.
+            </div>
+            <a href="/orders" class="btn btn-secondary">Volver</a>
+        {{else}}
+            <button type="submit" class="btn btn-success">Guardar Cambios</button>
+            <a href="/orders" class="btn btn-secondary">Cancelar</a>
+        {{end}}
     </form>
 </div>
-
 {{end}}

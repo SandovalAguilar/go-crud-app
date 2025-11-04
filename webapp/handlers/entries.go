@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 	"webapp/config"
 	"webapp/models"
 )
@@ -42,9 +43,9 @@ func AddEntry(w http.ResponseWriter, r *http.Request) {
 		description := r.FormValue("material_description")
 		supplier := r.FormValue("supplier_name")
 		note := r.FormValue("note")
-		entryDate := r.FormValue("entry_date")
+		entryDateStr := r.FormValue("entry_date")
 
-		if materialName == "" || quantity == "" || supplier == "" || entryDate == "" {
+		if materialName == "" || quantity == "" || supplier == "" || entryDateStr == "" {
 			http.Redirect(w, r, "/entries?error="+url.QueryEscape("Faltan campos requeridos"), http.StatusSeeOther)
 			return
 		}
@@ -52,6 +53,13 @@ func AddEntry(w http.ResponseWriter, r *http.Request) {
 		quantityInt, err := strconv.Atoi(quantity)
 		if err != nil {
 			http.Redirect(w, r, "/entries?error="+url.QueryEscape("Cantidad inválida"), http.StatusSeeOther)
+			return
+		}
+
+		// Parse entry date IN LOCAL TIMEZONE
+		entryDate, err := time.ParseInLocation("2006-01-02", entryDateStr, time.Local)
+		if err != nil {
+			http.Redirect(w, r, "/entries?error="+url.QueryEscape("Fecha de entrada inválida"), http.StatusSeeOther)
 			return
 		}
 
@@ -125,10 +133,10 @@ func EditEntry(w http.ResponseWriter, r *http.Request) {
 		supplierName := r.FormValue("supplier_name")
 		materialDescription := r.FormValue("material_description")
 		materialQuantity := r.FormValue("material_quantity")
-		entryDate := r.FormValue("entry_date")
+		entryDateStr := r.FormValue("entry_date")
 		note := r.FormValue("note")
 
-		if idStr == "" || materialName == "" || supplierName == "" || materialQuantity == "" || entryDate == "" {
+		if idStr == "" || materialName == "" || supplierName == "" || materialQuantity == "" || entryDateStr == "" {
 			http.Redirect(w, r, "/entries?error="+url.QueryEscape("Todos los campos requeridos deben estar llenos"), http.StatusSeeOther)
 			return
 		}
@@ -142,6 +150,13 @@ func EditEntry(w http.ResponseWriter, r *http.Request) {
 		quantity, err := strconv.Atoi(materialQuantity)
 		if err != nil {
 			http.Redirect(w, r, "/entries?error="+url.QueryEscape("Cantidad inválida"), http.StatusSeeOther)
+			return
+		}
+
+		// Parse entry date IN LOCAL TIMEZONE
+		entryDate, err := time.ParseInLocation("2006-01-02", entryDateStr, time.Local)
+		if err != nil {
+			http.Redirect(w, r, "/entries?error="+url.QueryEscape("Fecha de entrada inválida"), http.StatusSeeOther)
 			return
 		}
 

@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 	"webapp/config"
 	"webapp/models"
 )
@@ -70,11 +71,11 @@ func AddOutput(w http.ResponseWriter, r *http.Request) {
 		departmentName := r.FormValue("department_name")
 		quantity := r.FormValue("quantity")
 		description := r.FormValue("description")
-		date := r.FormValue("date")
+		dateStr := r.FormValue("date")
 		delivered := r.FormValue("delivered")
 		employeeName := r.FormValue("employee_name")
 
-		if materialName == "" || departmentName == "" || quantity == "" || date == "" || delivered == "" || employeeName == "" {
+		if materialName == "" || departmentName == "" || quantity == "" || dateStr == "" || delivered == "" || employeeName == "" {
 			http.Redirect(w, r, "/outputs?error="+url.QueryEscape("Faltan campos requeridos"), http.StatusSeeOther)
 			return
 		}
@@ -82,6 +83,13 @@ func AddOutput(w http.ResponseWriter, r *http.Request) {
 		quantityInt, err := strconv.Atoi(quantity)
 		if err != nil {
 			http.Redirect(w, r, "/outputs?error="+url.QueryEscape("Cantidad inválida"), http.StatusSeeOther)
+			return
+		}
+
+		// Parse date IN LOCAL TIMEZONE
+		date, err := time.ParseInLocation("2006-01-02", dateStr, time.Local)
+		if err != nil {
+			http.Redirect(w, r, "/outputs?error="+url.QueryEscape("Fecha inválida"), http.StatusSeeOther)
 			return
 		}
 
@@ -141,11 +149,11 @@ func EditOutput(w http.ResponseWriter, r *http.Request) {
 		departmentName := r.FormValue("department_name")
 		quantity := r.FormValue("quantity")
 		description := r.FormValue("description")
-		date := r.FormValue("date")
+		dateStr := r.FormValue("date")
 		delivered := r.FormValue("delivered")
 		employeeName := r.FormValue("employee_name")
 
-		if idStr == "" || materialName == "" || departmentName == "" || quantity == "" || date == "" || delivered == "" || employeeName == "" {
+		if idStr == "" || materialName == "" || departmentName == "" || quantity == "" || dateStr == "" || delivered == "" || employeeName == "" {
 			http.Redirect(w, r, "/outputs?error="+url.QueryEscape("Faltan campos requeridos"), http.StatusSeeOther)
 			return
 		}
@@ -153,6 +161,13 @@ func EditOutput(w http.ResponseWriter, r *http.Request) {
 		quantityInt, err := strconv.Atoi(quantity)
 		if err != nil {
 			http.Redirect(w, r, "/outputs?error="+url.QueryEscape("Cantidad inválida"), http.StatusSeeOther)
+			return
+		}
+
+		// Parse date IN LOCAL TIMEZONE
+		date, err := time.ParseInLocation("2006-01-02", dateStr, time.Local)
+		if err != nil {
+			http.Redirect(w, r, "/outputs?error="+url.QueryEscape("Fecha inválida"), http.StatusSeeOther)
 			return
 		}
 

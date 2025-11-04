@@ -39,7 +39,7 @@
         <!-- Date (Required) -->
         <div class="mb-3">
             <label for="date" class="form-label">Fecha</label>
-            <input type="date" class="form-control" id="date" name="date" value="{{.Output.Date}}" required>
+            <input type="date" class="form-control" id="date" name="date" value="{{formatDate .Output.Date}}" required>
         </div>
 
         <!-- Delivered (Required) -->

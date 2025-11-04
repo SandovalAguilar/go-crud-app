@@ -1,9 +1,7 @@
 {{define "edit_entry"}}
 {{ template "index" . }}
-
 <div class="container mt-4">
     <h1 class="text-center mb-4">Editar Entrada de Inventario</h1>
-
     <form action="/entries/edit" method="POST" class="mx-auto" style="max-width: 500px;">
         <!-- Hidden ID -->
         <input type="hidden" name="id" value="{{.ID}}">
@@ -35,7 +33,7 @@
         <!-- Fecha de entrada (Required) -->
         <div class="mb-3">
             <label for="entry_date" class="form-label">Fecha de entrada</label>
-            <input type="date" class="form-control" id="entry_date" name="entry_date" value="{{.EntryDate}}" required>
+            <input type="date" class="form-control" id="entry_date" name="entry_date" value="{{formatDate .EntryDate}}" required>
         </div>
 
         <!-- Nota (Optional) -->
@@ -48,5 +46,4 @@
         <a href="/entries" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
-
 {{end}}
