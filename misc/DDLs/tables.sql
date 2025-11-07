@@ -101,6 +101,9 @@ SELECT * FROM inventario_salidas;
 
 SELECT id, fecha_pedido, fecha_entrega FROM pedidos WHERE id = 31;
 
+DROP VIEW vw_inventario 
+
+CREATE VIEW vw_inventario AS
 SELECT
     LOWER(TRIM(i.nombre_material)) AS material,
     SUM(i.cantidad) AS entradas,
@@ -114,10 +117,5 @@ LEFT JOIN (
 ) s ON LOWER(TRIM(i.nombre_material)) = LOWER(TRIM(s.nombre_material))
 GROUP BY LOWER(TRIM(i.nombre_material));
 
-
-
-
-
-DROP VIEW IF EXISTS vw_inventario;
 
 

@@ -73,15 +73,3 @@ type InventoryOutput struct {
 func (InventoryOutput) TableName() string {
 	return "inventario_salidas"
 }
-
-type Pendings struct {
-	ID             uint      `gorm:"primaryKey;autoIncrement"`
-	MaterialName   string    `gorm:"type:varchar(255);column:nombre_material"`
-	EmployeeName   string    `gorm:"type:varchar(100);column:empleado_nombre"`
-	DepartmentName string    `gorm:"type:varchar(100);column:departamento_nombre"`
-	Date           time.Time `gorm:"type:date;column:fecha"`
-}
-
-func (Pendings) TableName() string {
-	return "material_pendiente_requisicion"
-}

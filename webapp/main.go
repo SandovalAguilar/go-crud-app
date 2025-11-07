@@ -81,12 +81,6 @@ func main() {
 	http.HandleFunc("/outputs/add", LoggingMiddleware(handlers.AddOutput))
 	http.HandleFunc("/outputs/edit", LoggingMiddleware(handlers.EditOutput))
 
-	// Pendings routes
-	//http.HandleFunc("/pendings", LoggingMiddleware(handlers.ShowPendings))
-	//http.HandleFunc("/pendings/add", LoggingMiddleware(handlers.AddPending))
-	//http.HandleFunc("/pendings/delete", LoggingMiddleware(handlers.DeletePending))
-	//http.HandleFunc("/pendings/edit", LoggingMiddleware(handlers.EditPending))
-
 	// Static files (no logging middleware for performance)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
