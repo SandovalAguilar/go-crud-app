@@ -2,7 +2,6 @@
 {{ template "index" . }}
 <div class="container mt-4">
     <h1 class="text-center mb-4">Solicitudes a Administración</h1>
-
     <!-- Error Alert -->
     {{if .Error}}
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -10,7 +9,6 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {{end}}
-
     <!-- Success Alert -->
     {{if .Success}}
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -18,10 +16,8 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {{end}}
-
     <!-- Add Order Button -->
     <a href="/orders/add" class="btn btn-success mb-3">Agregar Solicitud</a>
-
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover mx-auto">
             <thead class="table-dark">
@@ -44,12 +40,12 @@
                     <td>{{.ID}}</td>
                     <td>{{.MaterialName}}</td>
                     <td>{{.SupplierName}}</td>
-                    <td>{{.MaterialDescription}}</td>
+                    <td>{{if .MaterialDescription}}{{.MaterialDescription}}{{end}}</td>
                     <td>{{.MaterialQuantity}}</td>
                     <td>{{.Status}}</td>
-                    <td>{{.RequestDate}}</td>
-                    <td>{{.DeliveryDate}}</td>
-                    <td>{{.Note}}</td>
+                    <td>{{.RequestDate.Format "2006-01-02"}}</td>
+                    <td>{{if .DeliveryDate}}{{.DeliveryDate.Format "2006-01-02"}}{{end}}</td>
+                    <td>{{if .Note}}{{.Note}}{{end}}</td>
                     <td>
                         <!-- Edit Button -->
                         <a href="/orders/edit?id={{.ID}}" class="btn btn-warning btn-sm">Editar</a>

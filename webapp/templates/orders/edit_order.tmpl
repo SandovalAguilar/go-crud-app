@@ -2,70 +2,63 @@
 {{ template "index" . }}
 <div class="container mt-4">
     <h1 class="text-center mb-4">Editar Pedido</h1>
-    <form action="/orders/edit" method="POST" class="mx-auto" style="max-width: 500px;">
-        <!-- Hidden ID -->
+
+    {{if eq .Status "Recibido"}}
+    <div class="alert alert-warning" role="alert">
+        <strong>Atención:</strong> Este pedido ya fue recibido y no puede ser editado.
+    </div>
+    {{end}}
+
+    <form method="POST" action="/orders/edit" class="mx-auto" style="max-width: 500px;">
         <input type="hidden" name="id" value="{{.ID}}">
 
-        <!-- Material Name (Required) -->
         <div class="mb-3">
             <label for="material_name" class="form-label">Nombre del material</label>
-            <input type="text" class="form-control" id="material_name" name="material_name" value="{{.MaterialName}}" {{if eq .Status "Recibido"}}readonly{{end}} required>
+            <input type="text" class="form-control" id="material_name" name="material_name" value="{{.MaterialName}}" {{if eq .Status "Recibido"}}disabled{{else}}required{{end}}>
         </div>
 
-        <!-- Supplier Name (Required) -->
         <div class="mb-3">
             <label for="supplier_name" class="form-label">Proveedor</label>
-            <input type="text" class="form-control" id="supplier_name" name="supplier_name" value="{{.SupplierName}}" {{if eq .Status "Recibido"}}readonly{{end}} required>
+            <input type="text" class="form-control" id="supplier_name" name="supplier_name" value="{{.SupplierName}}" {{if eq .Status "Recibido"}}disabled{{end}}>
         </div>
 
-        <!-- Material Description (Optional) -->
         <div class="mb-3">
             <label for="material_description" class="form-label">Descripción del material</label>
-            <input type="text" class="form-control" id="material_description" name="material_description" value="{{if .MaterialDescription}}{{.MaterialDescription}}{{end}}" {{if eq .Status "Recibido"}}readonly{{end}}>
+            <input type="text" class="form-control" id="material_description" name="material_description" value="{{if .MaterialDescription}}{{.MaterialDescription}}{{end}}" {{if eq .Status "Recibido"}}disabled{{end}}>
         </div>
 
-        <!-- Quantity (Required) -->
         <div class="mb-3">
             <label for="material_quantity" class="form-label">Cantidad del material</label>
-            <input type="number" class="form-control" id="material_quantity" name="material_quantity" value="{{.MaterialQuantity}}" min="1" {{if eq .Status "Recibido"}}readonly{{end}} required>
+            <input type="number" class="form-control" id="material_quantity" name="material_quantity" value="{{.MaterialQuantity}}" {{if eq .Status "Recibido"}}disabled{{else}}required min="1"{{end}}>
         </div>
 
-        <!-- Status (Required) -->
         <div class="mb-3">
             <label for="status" class="form-label">Estado</label>
-            {{if eq .Status "Recibido"}}
-                <!-- Read-only display when Recibido -->
-                <input type="text" class="form-control" value="Recibido" readonly>
-                <input type="hidden" name="status" value="Recibido">
-                <div class="form-text text-warning">⚠️ El pedido ya fue recibido y no se puede cambiar el estado.</div>
-            {{else}}
-                <!-- Editable dropdown when not Recibido -->
-                <select class="form-select" id="status" name="status" required>
-                    <option value="">Seleccione...</option>
-                    <option value="Pendiente" {{if eq .Status "Pendiente"}}selected{{end}}>Pendiente</option>
-                    <option value="Aprobado" {{if eq .Status "Aprobado"}}selected{{end}}>Aprobado</option>
-                    <option value="Enviado" {{if eq .Status "Enviado"}}selected{{end}}>Enviado</option>
-                    <option value="Recibido" {{if eq .Status "Recibido"}}selected{{end}}>Recibido</option>
-                </select>
-            {{end}}
+            <select class="form-select" id="status" name="status" {{if eq .Status "Recibido"}}disabled{{else}}required{{end}}>
+                <option value="Pendiente" {{if eq .Status "Pendiente"}}selected{{end}}>Pendiente</option>
+                <option value="Recibido" {{if eq .Status "Recibido"}}selected{{end}}>Recibido</option>
+            </select>
         </div>
 
-        <!-- Note (Optional) -->
-        <div class="mb-3">
-            <label for="note" class="form-label">Nota</label>
-            <textarea class="form-control" id="note" name="note" rows="3" {{if eq .Status "Recibido"}}readonly{{end}}>{{if .Note}}{{.Note}}{{end}}</textarea>
-        </div>
-
-        <!-- Request Date (Required) -->
         <div class="mb-3">
             <label for="request_date" class="form-label">Fecha de pedido</label>
-            <input type="date" class="form-control" id="request_date" name="request_date" value="{{formatDate .RequestDate}}" {{if eq .Status "Recibido"}}readonly{{end}} required>
+            <input type="date" class="form-control" id="request_date" name="request_date" value="{{formatDate .RequestDate}}" {{if eq .Status "Recibido"}}disabled{{else}}required{{end}}>
         </div>
 
-        <!-- Delivery Date (Optional) -->
         <div class="mb-3">
-            <label for="delivery_date" class="form-label">Fecha de entrega</label>
-            <input type="date" class="form-control" id="delivery_date" name="delivery_date" value="{{formatDate .DeliveryDate}}" {{if eq .Status "Recibido"}}readonly{{end}}>
+            <label for="delivery_date" class="form-label">
+                Fecha de entrega
+                <span id="required-indicator" style="color: red; display: none;">*</span>
+            </label>
+            <input type="date" class="form-control" id="delivery_date" name="delivery_date" value="{{formatDate .DeliveryDate}}" {{if eq .Status "Recibido"}}disabled{{end}}>
+            <small id="delivery-date-help" class="form-text text-muted" style="display: none;">
+                La fecha de entrega es obligatoria para pedidos recibidos
+            </small>
+        </div>
+
+        <div class="mb-3">
+            <label for="note" class="form-label">Nota</label>
+            <textarea class="form-control" id="note" name="note" rows="3" {{if eq .Status "Recibido"}}disabled{{end}}>{{if .Note}}{{.Note}}{{end}}</textarea>
         </div>
 
         {{if eq .Status "Recibido"}}
@@ -79,4 +72,33 @@
         {{end}}
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusSelect = document.getElementById('status');
+    const deliveryDateInput = document.getElementById('delivery_date');
+    const requiredIndicator = document.getElementById('required-indicator');
+    const helpText = document.getElementById('delivery-date-help');
+
+    function updateDeliveryDateRequirement() {
+        if (statusSelect && statusSelect.value === 'Recibido') {
+            deliveryDateInput.setAttribute('required', 'required');
+            requiredIndicator.style.display = 'inline';
+            helpText.style.display = 'block';
+        } else if (statusSelect) {
+            deliveryDateInput.removeAttribute('required');
+            requiredIndicator.style.display = 'none';
+            helpText.style.display = 'none';
+        }
+    }
+
+    // Check on page load
+    updateDeliveryDateRequirement();
+
+    // Check when status changes
+    if (statusSelect) {
+        statusSelect.addEventListener('change', updateDeliveryDateRequirement);
+    }
+});
+</script>
 {{end}}

@@ -1,8 +1,8 @@
-{{define "edit_output"}}
+{{define "edit_pending"}}
 {{ template "index" . }}
 <div class="container mt-4">
-    <h1 class="text-center mb-4">Editar Salida de Inventario</h1>
-    <form action="/outputs/edit" method="POST" class="mx-auto" style="max-width: 500px;">
+    <h1 class="text-center mb-4">Editar Pendiente</h1>
+    <form action="/pendings/edit" method="POST" class="mx-auto" style="max-width: 500px;">
         <!-- Hidden ID to identify which entry to edit -->
         <input type="hidden" name="id" value="{{.Output.ID}}">
 
@@ -42,12 +42,12 @@
             <input type="date" class="form-control" id="date" name="date" value="{{formatDate .Output.Date}}" required>
         </div>
 
-        <!-- Delivered (Required) -->
+        <!-- Requisition (Required) -->
         <div class="mb-3">
-            <label for="delivered" class="form-label">Entregado</label>
-            <select class="form-select" id="delivered" name="delivered" required>
-                <option value="no" {{if eq .Output.Delivered "no"}}selected{{end}}>No</option>
-                <option value="si" {{if eq .Output.Delivered "si"}}selected{{end}}>Sí</option>
+            <label for="requisition" class="form-label">Requisicion</label>
+            <select class="form-select" id="requisition" name="requisition" required>
+                <option value="Pendiente" {{if eq .Output.Requisition "Pendiente"}}selected{{end}}>Pendiente</option>
+                <option value="Recibida" {{if eq .Output.Requisition "Recibida"}}selected{{end}}>Recibida</option>
             </select>
         </div>
 
@@ -65,7 +65,7 @@
 
         <!-- Submit and Cancel buttons -->
         <button type="submit" class="btn btn-success">Guardar Cambios</button>
-        <a href="/outputs" class="btn btn-secondary">Cancelar</a>
+        <a href="/pendings" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
 {{end}}

@@ -35,7 +35,7 @@ type Order struct {
 	SupplierName        string     `gorm:"type:varchar(255);column:nombre_proveedor"`
 	MaterialDescription *string    `gorm:"type:varchar(255);column:descripcion_material"`
 	MaterialQuantity    int        `gorm:"column:cantidad_material"`
-	Status              string     `gorm:"type:enum('Pendiente', 'Aprobado', 'Enviado', 'Recibido');default:'Pendiente';column:estado"`
+	Status              string     `gorm:"type:enum('Pendiente', 'Recibido');default:'Pendiente';column:estado"`
 	Note                *string    `gorm:"type:text;column:nota"`
 	RequestDate         time.Time  `gorm:"type:date;column:fecha_pedido"`
 	DeliveryDate        *time.Time `gorm:"type:date;column:fecha_entrega"`
@@ -72,4 +72,32 @@ type InventoryOutput struct {
 
 func (InventoryOutput) TableName() string {
 	return "inventario_salidas"
+}
+
+type Pendings struct {
+	ID             uint      `gorm:"primaryKey;autoIncrement"`
+	MaterialName   string    `gorm:"type:varchar(100);column:nombre_material"`
+	DepartmentName string    `gorm:"type:varchar(100);column:departamento_nombre"`
+	Quantity       int       `gorm:"column:cantidad"`
+	Description    *string   `gorm:"type:varchar(255);column:descripcion"`
+	Date           time.Time `gorm:"type:date;column:fecha"`
+	Requisition    string    `gorm:"type:enum('Pendiente','Recibida');default:'Pendiente';column:requisicion"`
+	EmployeeName   string    `gorm:"type:varchar(100);column:empleado_nombre"`
+}
+
+func (Pendings) TableName() string {
+	return "material_pendiente_requisicion"
+}
+
+type Request struct {
+	ID                  uint    `gorm:"primaryKey;autoIncrement"`
+	MaterialName        string  `gorm:"type:varchar(100);column:nombre_material"`
+	Quantity            int     `gorm:"column:cantidad"`
+	MaterialDescription *string `gorm:"type:varchar(255);column:descripcion_material"`
+	SupplierName        string  `gorm:"type:varchar(100);column:nombre_proveedor"`
+	Note                *string `gorm:"type:text;column:nota"`
+}
+
+func (Request) TableName() string {
+	return "solicitudes"
 }

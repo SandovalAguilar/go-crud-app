@@ -2,7 +2,6 @@
 {{ template "index" . }}
 <div class="container mt-4">
     <h1 class="text-center mb-4">{{.Title}}</h1>
-
     <!-- Error Alert -->
     {{if .Error}}
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -10,7 +9,6 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {{end}}
-
     <!-- Success Alert -->
     {{if .Success}}
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -18,10 +16,8 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {{end}}
-
     <!-- Create Entry Button -->
     <a href="/entries/add" class="btn btn-success mb-3">Agregar Entrada</a>
-
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover mx-auto">
             <thead class="table-dark">
@@ -42,10 +38,10 @@
                     <td>{{.ID}}</td>
                     <td>{{.MaterialName}}</td>
                     <td>{{.Quantity}}</td>
-                    <td>{{if .MaterialDescription}}{{.MaterialDescription}}{{else}}N/A{{end}}</td>
+                    <td>{{if .MaterialDescription}}{{.MaterialDescription}}{{end}}</td>
                     <td>{{.SupplierName}}</td>
-                    <td>{{.EntryDate}}</td>
-                    <td>{{if .Note}}{{.Note}}{{else}}N/A{{end}}</td>
+                    <td>{{.EntryDate.Format "2006-01-02"}}</td>
+                    <td>{{if .Note}}{{.Note}}{{end}}</td>
                     <td>
                         <!-- Edit Button -->
                         <a href="/entries/edit?id={{.ID}}" class="btn btn-warning btn-sm">Editar</a>

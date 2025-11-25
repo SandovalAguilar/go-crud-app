@@ -1,8 +1,8 @@
-{{define "add_output"}}
+{{define "add_pending"}}
 {{ template "index" . }}
 <div class="container mt-4">
-    <h1 class="text-center mb-4">Agregar Salida de Inventario</h1>
-    <form action="/outputs/add" method="POST" class="mx-auto" style="max-width: 500px;">
+    <h1 class="text-center mb-4">Agregar Pendiente</h1>
+    <form action="/pendings/add" method="POST" class="mx-auto" style="max-width: 500px;">
         <!-- Nombre del Material (Required) -->
         <div class="mb-3">
             <label for="material_name" class="form-label">Nombre del material</label>
@@ -39,12 +39,12 @@
             <input type="date" class="form-control" id="date" name="date" required>
         </div>
 
-        <!-- Entregado (Required) -->
+        <!-- Requisicion (Required) -->
         <div class="mb-3">
-            <label for="delivered" class="form-label">Entregado</label>
-            <select class="form-select" id="delivered" name="delivered" required>
-                <option value="no" selected>No</option>
-                <option value="si">Sí</option>
+            <label for="requisition" class="form-label">Requisicion</label>
+            <select class="form-select" id="requisition" name="requisition" required>
+                <option value="Pendiente" selected>Pendiente</option>
+                <option value="Recibida">Recibida</option>
             </select>
         </div>
 
@@ -60,8 +60,8 @@
             <div class="form-text">Si el empleado no aparece, <a href="/employees/add" target="_blank">pulse aquí</a>.</div>
         </div>
 
-        <button type="submit" class="btn btn-success">Agregar Salida</button>
-        <a href="/outputs" class="btn btn-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-success">Agregar Pendiente</button>
+        <a href="/pendings" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
 {{end}}

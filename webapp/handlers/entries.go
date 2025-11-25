@@ -45,7 +45,7 @@ func AddEntry(w http.ResponseWriter, r *http.Request) {
 		note := r.FormValue("note")
 		entryDateStr := r.FormValue("entry_date")
 
-		if materialName == "" || quantity == "" || supplier == "" || entryDateStr == "" {
+		if materialName == "" || quantity == "" || entryDateStr == "" {
 			http.Redirect(w, r, "/entries?error="+url.QueryEscape("Faltan campos requeridos"), http.StatusSeeOther)
 			return
 		}
@@ -136,7 +136,7 @@ func EditEntry(w http.ResponseWriter, r *http.Request) {
 		entryDateStr := r.FormValue("entry_date")
 		note := r.FormValue("note")
 
-		if idStr == "" || materialName == "" || supplierName == "" || materialQuantity == "" || entryDateStr == "" {
+		if idStr == "" || materialName == "" || materialQuantity == "" || entryDateStr == "" {
 			http.Redirect(w, r, "/entries?error="+url.QueryEscape("Todos los campos requeridos deben estar llenos"), http.StatusSeeOther)
 			return
 		}
