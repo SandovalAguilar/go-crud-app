@@ -92,10 +92,10 @@ func main() {
 
 	log.Println("Routes registered successfully")
 	log.Println("===========================================")
-	log.Println("Server starting on http://localhost:8080")
+	log.Println("Server starting on http://0.0.0.0:8080")
 	log.Println("===========================================")
 
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := http.ListenAndServe("0.0.0.0:8080", nil); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
 }
